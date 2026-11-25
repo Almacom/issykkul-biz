@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "title": "Issykkul.Biz — stays and transfers on Lake Issyk-Kul, direct from hosts",
+    "description": "Guesthouses, hotels, yurt camps and cottages on Issyk-Kul. Message hosts and drivers directly on WhatsApp and Telegram, no commission."
+  },
+  "nav": {
+    "home": "Home",
+    "stays": "Stays",
+    "transfers": "Transfers",
+    "pricing": "Plans for hosts",
+    "cabinet": "Dashboard"
+  },
+  "home": {
+    "eyebrow": "Lake Issyk-Kul · Kyrgyzstan",
+    "title": "Stays and transfers on Issyk-Kul, direct from the hosts",
+    "lead": "Choose guesthouses, hotels and yurt camps all around the lake, then message the host on WhatsApp or Telegram. No middlemen, no markup.",
+    "factAlt": "above sea level",
+    "factLen": "lake length",
+    "factWater": "water in July",
+    "factCount": "places listed",
+    "where": "Where",
+    "anywhere": "Whole shore",
+    "type": "Type",
+    "anyType": "Any",
+    "search": "Search",
+    "howTitle": "How it works",
+    "howLead": "We connect you with hosts. You agree and pay directly.",
+    "how1t": "Pick a place",
+    "how1": "Filter by village, price, beach and amenities. Map of the whole shore.",
+    "how2t": "Message the host",
+    "how2": "WhatsApp, Telegram or a call. Hosts usually reply within an hour.",
+    "how3t": "Pay on arrival",
+    "how3": "No booking fees. Price and terms are agreed with the host.",
+    "popular": "Popular this summer",
+    "seeAll": "See all",
+    "shoreTitle": "The shore",
+    "shoreLead": "The north shore has beaches and amenities; the south is quiet, with mountains and yurts.",
+    "ctaTitle": "Do you rent rooms or drive tourists?",
+    "ctaLead": "List your place and get requests directly. No commission per booking, just a fixed subscription.",
+    "ctaButton": "See plans",
+    "cta1": "booking commission",
+    "cta2v": "from 400 som",
+    "cta2": "per month",
+    "cta3v": "3 languages",
+    "cta4v": "16 years",
+    "cta4": "of Issykkul.Biz"
+  },
+  "stays": {
+    "title": "Stays on Issyk-Kul",
+    "found": "{count} found",
+    "list": "List",
+    "map": "Map",
+    "village": "Village",
+    "type": "Type",
+    "priceUpTo": "Price per night up to",
+    "amenities": "Amenities",
+    "reset": "Reset",
+    "empty": "Nothing matches these filters. Try resetting them."
+  },
+  "stay": {
+    "perNight": "per night",
+    "from": "from {price} som",
+    "premium": "Premium",
+    "verified": "Verified",
+    "about": "About",
+    "amenities": "Amenities",
+    "seasonPrices": "Seasonal prices",
+    "location": "Location",
+    "season1": "June & September",
+    "season2": "July – August",
+    "season3": "October – May",
+    "contactHost": "Contact the host",
+    "whatsapp": "WhatsApp",
+    "telegram": "Telegram",
+    "showPhone": "Show phone",
+    "direct": "You deal with the host directly. The site takes no commission.",
+    "since": "Listed since {year}",
+    "replies": "Replies within an hour",
+    "kmFromBishkek": "{km} km from Bishkek",
+    "noDirect": "This host hasn't opened direct contacts yet. Send a request and we'll pass it on.",
+    "request": "Send a request"
+  },
+  "transfers": {
+    "title": "Transfers around Issyk-Kul",
+    "lead": "Drivers list their own routes and prices. Call or message them directly.",
+    "from": "From",
+    "to": "To",
+    "seats": "{n} seats",
+    "years": "{n} yrs driving",
+    "perCar": "per car",
+    "empty": "No drivers on this route yet."
+  },
+  "pricing": {
+    "title": "Plans for hosts and drivers",
+    "lead": "A fixed subscription instead of 10% of every guest. All requests come straight to you.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "perMonth": "/ mo",
+    "perYear": "/ yr",
+    "free": "Free",
+    "save": "Save {sum} som",
+    "choose": "Choose",
+    "popular": "Most popular",
+    "faq": "Questions",
+    "plans": {
+      "start": {
+        "name": "Start",
+        "who": "To try it out",
+        "f": [
+          "Property page",
+          "Up to 5 photos",
+          "Requests via site form"
+        ],
+        "no": [
+          "Direct WhatsApp and phone",
+          "Higher in search"
+        ]
+      },
+      "standard": {
+        "name": "Standard",
+        "who": "Guesthouses and small hotels",
+        "f": [
+          "Everything in Start",
+          "Up to 25 photos, seasonal prices",
+          "Direct WhatsApp, Telegram, phone",
+          "Description in 3 languages",
+          "Views and clicks stats"
+        ],
+        "no": [
+          "Higher in search"
+        ]
+      },
+      "premium": {
+        "name": "Premium",
+        "who": "Hotels, resorts, cottages",
+        "f": [
+          "Everything in Standard",
+          "Top of search and home page",
+          "“Verified” badge",
+          "Availability calendar",
+          "A post on our socials each season"
+        ],
+        "no": []
+      },
+      "driver": {
+        "name": "Driver",
+        "who": "Transfers and day trips",
+        "f": [
+          "Profile and car photos",
+          "Up to 10 routes with prices",
+          "Direct contacts",
+          "Passenger reviews"
+        ],
+        "no": []
+      }
+    },
+    "q": [
+      [
+        "Why no commission?",
+        "You only pay the subscription. However many guests come through the site, we take no percentage."
+      ],
+      [
+        "How do I pay?",
+        "Bank transfer or QR via MBank, Elsom, O!Dengi, or by card. Activated within a day."
+      ],
+      [
+        "The season is short",
+        "The yearly plan is cheaper than monthly: pay once, stay visible all year."
+      ],
+      [
+        "I worked with you before",
+        "Partners of the old Issykkul.Biz get 3 months of Premium free."
+      ]
+    ],
+    "next": "Next: sign up and pay via MBank / Elsom QR. Coming soon."
+  },
+  "types": {
+    "hotel": "Hotel",
+    "guest": "Guesthouse",
+    "yurt": "Yurt camp",
+    "cottage": "Cottage",
+    "resort": "Resort"
+  },
+  "amenities": {
+    "beach": "Private beach",
+    "pool": "Pool",
+    "wifi": "Wi‑Fi",
+    "breakfast": "Breakfast",
+    "parking": "Parking",
+    "kids": "Kid‑friendly",
+    "sauna": "Banya"
+  },
+  "shore": {
+    "n": "North shore",
+    "s": "South shore",
+    "e": "East",
+    "w": "West"
+  },
+  "footer": {
+    "about": "© 2010–2027 Issykkul.Biz · Stays and transfers on Lake Issyk-Kul",
+    "owners": "For hosts and drivers"
+  },
+  "som": "som"
+}
