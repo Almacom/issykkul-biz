@@ -1,18 +1,21 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { VILLAGES, getStays, getVillage } from "@/lib/data";
+import { STAY_TYPES, byPromotion, getArticleIndex, getStayIndex, getVillages } from "@/lib/content";
 import { Scene } from "@/components/Scene";
 import { StayCard } from "@/components/StayCard";
 
-const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "bokonbaevo"];
-const TYPES = ["hotel", "guest", "yurt", "cottage", "resort"] as const;
+const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "tamga"];
 
 export default async function Home({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
-  const stays = await getStays();
+  const [stays, villages, articles] = await Promise.all([getStayIndex(), getVillages(), getArticleIndex()]);
+  const top = [...stays].sort(byPromotion).slice(0, 8);
+  const reviewsTotal = stays.reduce((n, s) => n + (s.reviewCount || 0), 0);
+  const withStays = villages.filter((v) => stays.some((s) => s.village === v.slug));
+  const guides = articles.filter((a) => a.section === "guide/sela" || a.section === "guide/ekskursii").slice(0, 6);
 
   return (
     <>
@@ -28,14 +31,14 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
               {t("home.where")}
               <select name="village" defaultValue="">
                 <option value="">{t("home.anywhere")}</option>
-                {VILLAGES.map((v) => <option key={v.slug} value={v.slug}>{v.name[locale]}</option>)}
+                {withStays.map((v) => <option key={v.slug} value={v.slug}>{v.name[locale]}</option>)}
               </select>
             </label>
             <label>
               {t("home.type")}
               <select name="type" defaultValue="">
                 <option value="">{t("home.anyType")}</option>
-                {TYPES.map((k) => <option key={k} value={k}>{t(`types.${k}`)}</option>)}
+                {STAY_TYPES.map((k) => <option key={k} value={k}>{t(`types.${k}`)}</option>)}
               </select>
             </label>
             <button className="btn" type="submit">{t("home.search")}</button>
@@ -43,31 +46,27 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
           <div className="facts">
             <div><b>1 607 м</b>{t("home.factAlt")}</div>
             <div><b>182 км</b>{t("home.factLen")}</div>
-            <div><b>+22 °C</b>{t("home.factWater")}</div>
             <div><b>{stays.length}</b>{t("home.factCount")}</div>
+            <div><b>{reviewsTotal.toLocaleString("ru-RU")}</b>{t("nav.reviews").toLowerCase()}</div>
           </div>
         </div>
       </section>
 
       <section className="block">
         <div className="wrap">
-          <div className="sec-head"><div><h2>{t("home.howTitle")}</h2><p>{t("home.howLead")}</p></div></div>
-          <div className="how">
-            {[1, 2, 3].map((i) => (
-              <div key={i}>
-                <div className="n">0{i}</div>
-                <h3>{t(`home.how${i}t`)}</h3>
-                <p>{t(`home.how${i}`)}</p>
-              </div>
-            ))}
-          </div>
+          <div className="sec-head"><div><h2>{t("home.popular")}</h2></div><Link className="btn ghost sm" href="/stays">{t("home.seeAll")} →</Link></div>
+          <div className="grid">{top.map((s) => <StayCard key={s.slug} stay={s} villages={villages} />)}</div>
         </div>
       </section>
 
       <section className="block sec-tight">
         <div className="wrap">
-          <div className="sec-head"><div><h2>{t("home.popular")}</h2></div><Link className="btn ghost sm" href="/stays">{t("home.seeAll")} →</Link></div>
-          <div className="grid">{stays.slice(0, 4).map((s) => <StayCard key={s.id} stay={s} />)}</div>
+          <div className="sec-head"><div><h2>{t("home.howTitle")}</h2><p>{t("home.howLead")}</p></div></div>
+          <div className="how">
+            {[1, 2, 3].map((i) => (
+              <div key={i}><div className="n">0{i}</div><h3>{t(`home.how${i}t`)}</h3><p>{t(`home.how${i}`)}</p></div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -76,17 +75,28 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
           <div className="sec-head"><div><h2>{t("home.shoreTitle")}</h2><p>{t("home.shoreLead")}</p></div></div>
           <div className="villages">
             {FEATURED_VILLAGES.map((slug, i) => {
-              const v = getVillage(slug);
+              const v = villages.find((x) => x.slug === slug);
+              if (!v) return null;
+              const n = stays.filter((s) => s.village === slug).length;
               return (
                 <Link key={slug} className="vcard" href={{ pathname: "/stays", query: { village: slug } }}>
-                  <Scene seed={31 + i * 13} mood={v.mood} horizon={200} />
-                  <span><b>{v.name[locale]}</b><small>{t(`shore.${v.shore}`)} · {t("stay.kmFromBishkek", { km: v.kmFromBishkek })}</small></span>
+                  <Scene seed={31 + i * 13} mood={i % 4} horizon={200} />
+                  <span><b>{v.name[locale]}</b><small>{t(`shore.${v.shore}`)} · {t("stays.found", { count: n })}</small></span>
                 </Link>
               );
             })}
           </div>
         </div>
       </section>
+
+      {guides.length > 0 && (
+        <section className="block sec-tight">
+          <div className="wrap">
+            <div className="sec-head"><div><h2>{t("guide.title")}</h2><p>{t("guide.lead")}</p></div><Link className="btn ghost sm" href="/guide">{t("guide.all")} →</Link></div>
+            <ul className="alist">{guides.map((a) => <li key={a.path}><Link href={a.path}>{a.h1}</Link></li>)}</ul>
+          </div>
+        </section>
+      )}
 
       <section className="block sec-tight">
         <div className="wrap">

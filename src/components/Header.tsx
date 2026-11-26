@@ -9,7 +9,9 @@ export async function Header() {
   const items = [
     { href: "/", label: t("home") },
     { href: "/stays", label: t("stays") },
+    { href: "/guide", label: t("guide") },
     { href: "/transfers", label: t("transfers") },
+    { href: "/otzyvy", label: t("reviews") },
     { href: "/pricing", label: t("pricing") },
   ];
   return (

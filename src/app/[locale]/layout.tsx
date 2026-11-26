@@ -20,7 +20,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     metadataBase: new URL(SITE_URL),
     title: { default: t("title"), template: "%s · Issykkul.Biz" },
     description: t("description"),
-    alternates: { languages: { ru: "/", en: "/en", ky: "/ky", "x-default": "/" } },
     openGraph: { siteName: "Issykkul.Biz", locale, type: "website" },
   };
 }

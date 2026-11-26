@@ -1,26 +1,29 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { formatSom, getVillage, type Stay } from "@/lib/data";
-import { Scene } from "./Scene";
+import { villageName, type StaySummary, type Village } from "@/lib/content";
+import { formatSom } from "@/lib/data";
+import { Photo } from "./Photo";
 
-export async function StayCard({ stay }: { stay: Stay }) {
+export async function StayCard({ stay, villages }: { stay: StaySummary; villages: Village[] }) {
   const t = await getTranslations();
   const locale = (await getLocale()) as Locale;
-  const v = getVillage(stay.village);
   return (
     <Link className="card" href={`/stays/${stay.slug}`}>
       <div className="ph">
-        <Scene seed={stay.id * 7} mood={stay.mood} yurt={stay.type === "yurt"} />
+        <Photo src={stay.photo} alt={stay.name} seed={stay.name.length} />
         {stay.plan === "premium" && <span className="badge">{t("stay.premium")}</span>}
-        {stay.verified && <span className="badge ver">✓ {t("stay.verified")}</span>}
       </div>
       <div className="body">
-        <div className="meta">{t(`types.${stay.type}`)} · {v.name[locale]}</div>
+        <div className="meta">{t(`types.${stay.type}`)} · {villageName(villages, stay.village, locale)}</div>
         <h3>{stay.name}</h3>
         <div className="row">
-          <span className="price">{t("stay.from", { price: formatSom(stay.priceFrom) })} <small>{t("stay.perNight")}</small></span>
-          <span className="rating">★ {stay.rating.toFixed(1)}</span>
+          <span className="price">
+            {stay.priceFrom ? <>{t("stay.from", { price: formatSom(stay.priceFrom) })} <small>{t("stay.perNight")}</small></> : <small>{t("stay.priceOnRequest")}</small>}
+          </span>
+          {stay.reviewCount > 0 && stay.rating ? (
+            <span className="rating">★ {stay.rating.toFixed(1)} · {t("stay.reviewsN", { n: stay.reviewCount })}</span>
+          ) : null}
         </div>
       </div>
     </Link>

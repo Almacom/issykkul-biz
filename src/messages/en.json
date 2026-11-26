@@ -8,7 +8,9 @@
     "stays": "Stays",
     "transfers": "Transfers",
     "pricing": "Plans for hosts",
-    "cabinet": "Dashboard"
+    "cabinet": "Dashboard",
+    "guide": "Guide",
+    "reviews": "Reviews"
   },
   "home": {
     "eyebrow": "Lake Issyk-Kul · Kyrgyzstan",
@@ -78,7 +80,17 @@
     "replies": "Replies within an hour",
     "kmFromBishkek": "{km} km from Bishkek",
     "noDirect": "This host hasn't opened direct contacts yet. Send a request and we'll pass it on.",
-    "request": "Send a request"
+    "request": "Send a request",
+    "priceOnRequest": "Price on request",
+    "reviewsN": "{n} reviews",
+    "rooms": "Rooms and prices",
+    "food": "Meals",
+    "reviews": "Guest reviews",
+    "askWa": "Ask on WhatsApp",
+    "waText": "Hello! I'm interested in {name} (from issykkul.biz)",
+    "perPeriod": "{per}",
+    "photosN": "{n} photos",
+    "moreAbout": "More"
   },
   "transfers": {
     "title": "Transfers around Issyk-Kul",
@@ -179,7 +191,10 @@
     "guest": "Guesthouse",
     "yurt": "Yurt camp",
     "cottage": "Cottage",
-    "resort": "Resort"
+    "resort": "Holiday centre",
+    "pansionat": "Pansionat",
+    "minipansionat": "Mini-pansionat",
+    "sanatorium": "Sanatorium"
   },
   "amenities": {
     "beach": "Private beach",
@@ -200,5 +215,33 @@
     "about": "© 2010–2027 Issykkul.Biz · Stays and transfers on Lake Issyk-Kul",
     "owners": "For hosts and drivers"
   },
-  "som": "som"
+  "som": "som",
+  "reviews": {
+    "more": "{n} more reviews",
+    "title": "Traveller reviews",
+    "lead": "Guest reviews of hotels, pansionats and guesthouses on Issyk-Kul.",
+    "about": "Reviewed place"
+  },
+  "guide": {
+    "title": "Issyk-Kul travel guide",
+    "lead": "Shore villages, day trips, beaches, getting there and when to go.",
+    "where": "Where to stay",
+    "sections": {
+      "guide": "Useful",
+      "guide/sela": "Villages and towns",
+      "guide/ekskursii": "Day trips",
+      "guide/plyazhi": "Beaches",
+      "guide/kak-dobratsya": "Getting there",
+      "guide/kogda-ehat": "When to go",
+      "guide/tury": "Tours",
+      "guide/detskie-lagerya": "Kids camps",
+      "blog": "Blog",
+      "rasskazy": "Travellers' stories"
+    },
+    "ruOnly": "This article is available in Russian only for now.",
+    "all": "All articles"
+  },
+  "pager": {
+    "page": "Page {n}"
+  }
 }

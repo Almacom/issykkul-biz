@@ -3,7 +3,8 @@ import { useState } from "react";
 
 type Props = {
   kind: "stay" | "driver";
-  id: number;
+  id: number | string;
+  waText?: string;
   phone: string;
   whatsapp: string;
   telegram?: string;
@@ -12,19 +13,19 @@ type Props = {
 };
 
 /** Sends a click event so hosts can see how many contacts the site brought them. */
-function track(kind: string, id: number, channel: string) {
+function track(kind: string, id: number | string, channel: string) {
   try {
     navigator.sendBeacon?.("/api/track", JSON.stringify({ kind, id, channel }));
   } catch {}
 }
 
-export function ContactButtons({ kind, id, phone, whatsapp, telegram, labels, small }: Props) {
+export function ContactButtons({ kind, id, phone, whatsapp, telegram, labels, small, waText }: Props) {
   const [shown, setShown] = useState(false);
   const cls = small ? " sm" : "";
   const wa = whatsapp.replace(/[^\d]/g, "");
   return (
     <>
-      <a className={`btn wa${cls}`} href={`https://wa.me/${wa}`} target="_blank" rel="noopener" onClick={() => track(kind, id, "whatsapp")}>
+      <a className={`btn wa${cls}`} href={`https://wa.me/${wa}${waText ? `?text=${encodeURIComponent(waText)}` : ""}`} target="_blank" rel="noopener" onClick={() => track(kind, id, "whatsapp")}>
         {labels.whatsapp}
       </a>
       {telegram && (

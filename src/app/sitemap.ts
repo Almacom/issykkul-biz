@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
-import { getStays } from "@/lib/data";
+import { getArticleIndex, getStayIndex } from "@/lib/content";
 import { SITE_URL } from "@/lib/site";
 
-const prefix = { ru: "", en: "/en", ky: "/ky" } as const;
-
+/** Russian pages only: EN/KY versions of migrated content are not translated yet (noindex). */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const paths = ["", "/stays", "/transfers", "/pricing", ...(await getStays()).map((s) => `/stays/${s.slug}`)];
-  return paths.map((p) => ({
-    url: `${SITE_URL}${p || "/"}`,
-    alternates: { languages: Object.fromEntries(Object.entries(prefix).map(([l, pre]) => [l, `${SITE_URL}${pre}${p}` || SITE_URL])) },
+  const [stays, articles] = await Promise.all([getStayIndex(), getArticleIndex()]);
+  const paths = ["/", "/stays", "/guide", "/transfers", "/pricing", ...stays.map((s) => `/stays/${s.slug}`), ...articles.map((a) => a.path)];
+  return [...new Set(paths)].map((p) => ({
+    url: `${SITE_URL}${p === "/" ? "" : p}`,
+    priority: p === "/" ? 1 : p.startsWith("/stays/") ? 0.8 : 0.6,
   }));
 }
