@@ -18,7 +18,8 @@ Owner works with Claude Code; explain changes in Russian.
 
 ## Commands
 - `npm run dev` — local dev on :3000
-- `npm run build` — must pass before committing
+- `npm run build` — Cloudflare build via OpenNext (calls `next build` inside); must pass before committing. Cloudflare Workers Builds runs `npm run build` then `npx wrangler deploy`
+- `npm run build:next` — plain Next.js build
 - `npm run lint`
 - `npm run preview` — build for Cloudflare and run locally in the Workers runtime
 - `npm run deploy` — build and deploy to Cloudflare (normally done automatically from GitHub)
