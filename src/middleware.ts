@@ -6,7 +6,7 @@ import REDIRECTS from "./lib/redirects.json";
 const intl = createMiddleware(routing);
 const MAP = REDIRECTS as Record<string, string | null>;
 const CANONICAL_HOST = "www.issykkul.biz";
-const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_BASE;
+const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_BASE ?? "https://img.issykkul.biz";
 
 const GONE_HTML = `<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Страница удалена · Issykkul.Biz</title>
 <body style="font-family:system-ui,sans-serif;max-width:560px;margin:15vh auto;padding:0 16px;color:#0D2A31"><h1>Страница удалена</h1>

@@ -15,7 +15,7 @@ Owner works with Claude Code; explain changes in Russian.
 - Content migrated from the old site: JSON in `public/content/` (stays, articles, reviews, villages), read via `src/lib/content.ts` (ASSETS binding on Cloudflare, disk during build). Regenerate with `scripts/migrate/build_content.py <crawl_dir> .` — never edit the JSON by hand. `src/lib/data.ts` now only holds plan prices and demo transfer drivers. Planned DB: Supabase, draft in `supabase/schema.sql`.
 - Text pages (guide, blog, stories, category landings, FAQ, terms) are served by one catch-all route `src/app/[locale]/[...path]/page.tsx`; category landing filters live in `src/lib/landings.ts`.
 - SEO migration: `migration/url-map.json` (old URL → new). `scripts/migrate/build_redirects.py` turns it into `src/lib/redirects.json`, applied in `src/middleware.ts` (301 / 410). Canonical host `www.issykkul.biz`; other hosts get `X-Robots-Tag: noindex`. Migrated content is Russian only: EN/KY versions are noindex with canonical to RU.
-- Photos still load from the old server (`NEXT_PUBLIC_IMAGE_BASE`, default https://www.issykkul.biz) until copied to R2 (`migration/images.txt`).
+- Photos are in R2 bucket `issykkul-photos`, served from https://img.issykkul.biz (`NEXT_PUBLIC_IMAGE_BASE`); keys are lower-cased decoded paths (`migration/images.txt`). Old `/Portals/...` URLs 301 to it.
 - Hosting: Cloudflare Workers via OpenNext (`@opennextjs/cloudflare`, config in `wrangler.jsonc`, `open-next.config.ts`). Worker name `issykkul-biz`. Free plan limit 3 MB gzipped (currently ~1 MB) — check with `npx wrangler deploy --dry-run` after adding big dependencies. Domain registered at Namecheap, DNS already on Cloudflare (Free plan).
 - Photos: `Scene` component draws placeholder landscapes until real photos exist.
 
@@ -28,4 +28,4 @@ Owner works with Claude Code; explain changes in Russian.
 - `npm run deploy` — build and deploy to Cloudflare (normally done automatically from GitHub)
 
 ## Launch target: 10 January 2027
-Remaining: copy photos to R2, Supabase + owner auth & dashboard, admin panel, request form for Start plan, translations of migrated content, switch DNS (domain is already on Cloudflare; Pro plan cancelled).
+Remaining: Supabase + owner auth & dashboard, admin panel, request form for Start plan, translations of migrated content, switch DNS (domain is already on Cloudflare; Pro plan cancelled).

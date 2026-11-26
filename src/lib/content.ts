@@ -105,8 +105,8 @@ const planRank = { premium: 2, standard: 1, start: 0 } as const;
 export const byPromotion = (a: StaySummary, b: StaySummary) =>
   planRank[b.plan] - planRank[a.plan] || (b.reviewCount ?? 0) - (a.reviewCount ?? 0) || (b.rating ?? 0) - (a.rating ?? 0);
 
-/** Photos stay on the old server until they are copied to R2; then set NEXT_PUBLIC_IMAGE_BASE. */
-export const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_BASE ?? "https://www.issykkul.biz";
+/** Photos are served from Cloudflare R2 (bucket issykkul-photos) via img.issykkul.biz. */
+export const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_BASE ?? "https://img.issykkul.biz";
 export const img = (p: string | null | undefined) => (p ? (p.startsWith("http") ? p : IMAGE_BASE + p) : null);
 
 /** Rewrites image paths inside migrated HTML to the current image host. */
