@@ -79,7 +79,7 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
               const v = getVillage(slug);
               return (
                 <Link key={slug} className="vcard" href={{ pathname: "/stays", query: { village: slug } }}>
-                  <Scene seed={31 + i * 13} mood={v.mood} yurt={slug === "bokonbaevo"} horizon={200} />
+                  <Scene seed={31 + i * 13} mood={v.mood} horizon={200} />
                   <span><b>{v.name[locale]}</b><small>{t(`shore.${v.shore}`)} · {t("stay.kmFromBishkek", { km: v.kmFromBishkek })}</small></span>
                 </Link>
               );

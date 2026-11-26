@@ -13,12 +13,15 @@ Owner works with Claude Code; explain changes in Russian.
 - Next.js 15 App Router, TypeScript, plain CSS (`src/app/globals.css`, tokens on `:root`, light + dark).
 - i18n: next-intl. Locales `ru` (default, no URL prefix), `en`, `ky` (shown as "KG"). Texts in `src/messages/*.json` — every UI string goes into all three files.
 - Data: `src/lib/data.ts` is the only data access point (demo seed for now). Planned DB: Supabase, draft in `supabase/schema.sql`.
+- Hosting: Cloudflare Workers via OpenNext (`@opennextjs/cloudflare`, config in `wrangler.jsonc`, `open-next.config.ts`). Worker name `issykkul-biz`. Free plan limit 3 MB gzipped (currently ~1 MB) — check with `npx wrangler deploy --dry-run` after adding big dependencies. Domain stays registered at Namecheap; DNS moves to Cloudflare at launch.
 - Photos: `Scene` component draws placeholder landscapes until real photos exist.
 
 ## Commands
 - `npm run dev` — local dev on :3000
 - `npm run build` — must pass before committing
 - `npm run lint`
+- `npm run preview` — build for Cloudflare and run locally in the Workers runtime
+- `npm run deploy` — build and deploy to Cloudflare (normally done automatically from GitHub)
 
 ## Launch target: 10 January 2027
-Remaining: Supabase + owner auth & dashboard, admin panel, request form for Start plan, real photos, import of ~50 objects from DotNetNuke (SQL Server), 301 redirects from old URLs, Vercel deploy, DNS on Namecheap.
+Remaining: Supabase + owner auth & dashboard, admin panel, request form for Start plan, real photos, import of ~50 objects from DotNetNuke (SQL Server), 301 redirects from old URLs, DNS on Namecheap.
