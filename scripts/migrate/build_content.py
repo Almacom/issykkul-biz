@@ -108,6 +108,11 @@ def strip_attrs(h):
 
 images = set()
 
+def img_url(p):
+    """Old image path -> the path used on the new site and as the R2 key: no query, decoded, lower-case, then URL-encoded."""
+    from urllib.parse import quote, unquote
+    return quote(unquote(p.split("?")[0]).lower(), safe="/()-_.~")
+
 def rewrite(h):
     def a(m):
         href = m.group(2)
@@ -122,7 +127,7 @@ def rewrite(h):
         if re.match(r"^(https?://(www\.)?issykkul\.biz)?/portals/", src, re.I):
             p = re.sub(r"^https?://(www\.)?issykkul\.biz", "", src, flags=re.I)
             images.add(p)
-            return f'src="{html.escape(p.lower(), quote=True)}"'
+            return f'src="{html.escape(img_url(p), quote=True)}"'
         return m.group(0)
     return re.sub(r'src="([^"]*)"', img, h)
 
@@ -146,7 +151,7 @@ def section_html(raw, name):
 
 def photo(p):
     images.add(p)
-    return p.lower()
+    return img_url(p)
 
 stays = []
 stay_files = {}

@@ -27,7 +27,9 @@ function legacy(req: NextRequest): NextResponse | null {
 
   // old photo URLs → photo storage (only once photos live elsewhere, to avoid a loop)
   if (lower.startsWith("/portals/") && IMAGE_BASE && !IMAGE_BASE.includes(CANONICAL_HOST)) {
-    return NextResponse.redirect(IMAGE_BASE + lower, 301);
+    let key = lower;
+    try { key = encodeURI(decodeURIComponent(pathname).toLowerCase()); } catch {}
+    return NextResponse.redirect(IMAGE_BASE + key, 301);
   }
   if (!lower.endsWith(".aspx") && !lower.includes(".aspx/") && !MAP[lower]) return null;
 
