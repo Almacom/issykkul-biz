@@ -60,6 +60,8 @@ export interface StaySummary {
   plan: "start" | "standard" | "premium";
   photo: string | null;
   photoCount: number;
+  /** Object id on the old site — grows with the date the listing was added. */
+  oldId?: number;
 }
 
 export interface Room {
@@ -92,7 +94,12 @@ export interface Review {
 export interface ArticleSummary {
   path: string; section: string; h1: string; seoTitle: string; seoDescription: string; village: string | null;
 }
-export interface Article extends ArticleSummary { html: string; relatedStays: string[]; faq?: { q: string; a: string }[] }
+export interface Article extends ArticleSummary {
+  html: string;
+  relatedStays: string[];
+  faq?: { q: string; a: string }[];
+  albums?: { title: string; photos: string[] }[];
+}
 
 /* ---------- accessors ---------- */
 

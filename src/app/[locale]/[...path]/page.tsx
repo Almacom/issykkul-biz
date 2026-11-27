@@ -13,6 +13,7 @@ import {
 } from "@/lib/content";
 import { LANDINGS, landingStays } from "@/lib/landings";
 import { ArticleBody } from "@/components/ArticleBody";
+import { ArticleAlbums } from "@/components/ArticleAlbums";
 import { StayCard } from "@/components/StayCard";
 import { Reviews } from "@/components/Reviews";
 
@@ -113,6 +114,7 @@ export default async function TextPage({ params }: P) {
         {article && (
           <div style={{ display: "grid", gap: 30 }}>
             {article.html && <ArticleBody html={article.html} />}
+            {article.albums?.length ? <ArticleAlbums albums={article.albums} name={article.h1} /> : null}
             {isLanding && (
               <div>
                 <p className="note">{t("stays.found", { count: landingList.length })}</p>

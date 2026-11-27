@@ -4,10 +4,16 @@ import type { Locale } from "@/i18n/routing";
 import { IMAGE_BASE, STAY_TYPES, byPromotion, getArticleIndex, getStayIndex, getVillages } from "@/lib/content";
 import { Scene } from "@/components/Scene";
 import { StayCard } from "@/components/StayCard";
+import { LANDINGS } from "@/lib/landings";
 import { Photo } from "@/components/Photo";
 
 /** The site has worked since 2010 (17 years at the 2027 relaunch); grows by itself every year. */
 const SITE_YEARS = Math.max(17, new Date().getFullYear() - 2010);
+
+/** Category landing page for each stay type (e.g. guest → /chastnyy-sektor). */
+const TYPE_LANDING: Record<string, string> = Object.fromEntries(
+  Object.entries(LANDINGS).filter(([, l]) => l.types?.length === 1 && !l.village).map(([slug, l]) => [l.types![0], slug]),
+);
 
 const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "kadzhi-say"];
 
@@ -29,6 +35,15 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
   const sorted = [...stays].sort(byPromotion);
   const premium = sorted.filter((s) => s.plan === "premium");
   const top = (premium.length >= 4 ? premium : sorted).slice(0, 8);
+  // Recently added: newest old-site ids first (DB created_at once owners add listings), not repeating the popular block.
+  const topSlugs = new Set(top.map((s) => s.slug));
+  const newest = [...stays].filter((s) => !topSlugs.has(s.slug)).sort((a, b) => (b.oldId ?? 0) - (a.oldId ?? 0)).slice(0, 8);
+  // Categories: count per type, photo = cover of the most reviewed listing of that type, link = category landing.
+  const categories = STAY_TYPES.map((type) => {
+    const list = stays.filter((s) => s.type === type);
+    const best = [...list].filter((s) => s.photo).sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0))[0];
+    return { type, count: list.length, photo: best?.photo ?? null, href: TYPE_LANDING[type] ? `/${TYPE_LANDING[type]}` : `/stays?type=${type}` };
+  }).filter((c) => c.count > 0).sort((a, b) => b.count - a.count);
   const reviewsTotal = stays.reduce((n, s) => n + (s.reviewCount || 0), 0);
   const withStays = villages.filter((v) => stays.some((s) => s.village === v.slug));
   const guides = articles.filter((a) => a.section === "guide/sela" || a.section === "guide/ekskursii").slice(0, 6);
@@ -80,6 +95,26 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
 
       <section className="block sec-tight">
         <div className="wrap">
+          <div className="sec-head"><div><div className="kicker">{t("home.catEyebrow")}</div><h2>{t("home.catTitle")}</h2></div></div>
+          <div className="cats">
+            {categories.map((c, i) => (
+              <Link key={c.type} className="cat" href={c.href}>
+                <div className="ph"><Photo src={c.photo} alt={t(`types.${c.type}`)} seed={i + 3} /></div>
+                <b>{t(`home.cat.${c.type}`)}</b>
+                <span>{t("home.catCount", { n: c.count })}</span>
+              </Link>
+            ))}
+            <Link className="cat" href="/stays">
+              <div className="ph"><Photo src="/site/hero-1000.jpg" alt={t("home.catAll")} /></div>
+              <b>{t("home.catAll")}</b>
+              <span>{t("home.catCount", { n: stays.length })}</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="block sec-tight">
+        <div className="wrap">
           <div className="sec-head"><div><h2>{t("home.howTitle")}</h2><p>{t("home.howLead")}</p></div></div>
           <div className="how">
             {[1, 2, 3].map((i) => (
@@ -124,6 +159,13 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
           </div>
         </section>
       )}
+
+      <section className="block sec-tight">
+        <div className="wrap">
+          <div className="sec-head"><div><div className="kicker">{t("home.newEyebrow")}</div><h2>{t("home.newTitle")}</h2></div><Link className="btn ghost sm" href="/stays">{t("home.seeAll")} →</Link></div>
+          <div className="grid">{newest.map((s) => <StayCard key={s.slug} stay={s} villages={villages} />)}</div>
+        </div>
+      </section>
 
       <section className="block sec-tight">
         <div className="wrap">

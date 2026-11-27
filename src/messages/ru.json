@@ -47,7 +47,23 @@
     "cta4v": "16 лет",
     "cta4": "сайту Issykkul.Biz",
     "factYearsN": "{n, plural, one {# год} few {# года} many {# лет} other {# лет}}",
-    "factYears": "с 2010 года на Иссык-Куле"
+    "factYears": "с 2010 года на Иссык-Куле",
+    "catEyebrow": "Категории жилья",
+    "catTitle": "Поиск жилья по категориям",
+    "catAll": "Всё жильё",
+    "catCount": "{n, plural, one {# объект} few {# объекта} many {# объектов} other {# объекта}}",
+    "cat": {
+      "guest": "Частный сектор",
+      "cottage": "Коттеджи",
+      "pansionat": "Пансионаты",
+      "hotel": "Отели",
+      "minipansionat": "Мини-пансионаты",
+      "resort": "Центры отдыха",
+      "sanatorium": "Санатории",
+      "yurt": "Юрточные лагеря"
+    },
+    "newEyebrow": "Новые объявления",
+    "newTitle": "Недавно добавленное жильё"
   },
   "stays": {
     "title": "Жильё на Иссык-Куле",

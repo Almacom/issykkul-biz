@@ -47,7 +47,23 @@
     "cta4v": "16 years",
     "cta4": "of Issykkul.Biz",
     "factYearsN": "{n} years",
-    "factYears": "on Issyk-Kul since 2010"
+    "factYears": "on Issyk-Kul since 2010",
+    "catEyebrow": "Accommodation categories",
+    "catTitle": "Search accommodation by category",
+    "catAll": "All accommodation",
+    "catCount": "{n, plural, one {# place} other {# places}}",
+    "cat": {
+      "guest": "Guesthouses",
+      "cottage": "Cottages",
+      "pansionat": "Pansionats",
+      "hotel": "Hotels",
+      "minipansionat": "Mini-pansionats",
+      "resort": "Holiday centres",
+      "sanatorium": "Sanatoriums",
+      "yurt": "Yurt camps"
+    },
+    "newEyebrow": "New listings",
+    "newTitle": "Recently added accommodation"
   },
   "stays": {
     "title": "Stays on Issyk-Kul",

@@ -8,6 +8,7 @@ Usage:
 optionally reviews.json + reviews_full.json.
 Writes <repo_dir>/public/content/** and <repo_dir>/migration/images.txt.
 """
+import hashlib
 import json, re, os, sys, html, collections, shutil
 
 CRAWL, REPO = sys.argv[1], sys.argv[2]
@@ -182,14 +183,27 @@ def pick_cover(slug, gallery, pool):
 ALBUM_RANK = [r"террит|двор|общ|вид|здани|корпус", r"^фото(графии)?$|^фото\s|^фотографии", r"пляж|бассейн", r"разн", r"кафе|столов|ресторан|сауна|баня|медицин|этаж"]
 ALBUM_LAST = r"рядом|гост|чок-тал"
 
-def object_albums(raw):
-    out = []
+def _album_segments(raw):
     for m in re.finditer(r'DnnModule-IssykkulPhotoAlbumI DnnModule-(\d+)"', raw):
         seg = raw[m.end():]
         nxt = seg.find('<div class="DnnModule ')
-        seg = seg[:nxt if nxt > 0 else None]
+        yield m.group(1), seg[:nxt if nxt > 0 else None]
+
+def object_albums(raw, url=None, ranked=True):
+    """Photo albums of a page. Long albums were split into ?pg=2,3… pages, saved in <crawl>/albumpages/."""
+    extra = {}
+    if url:
+        base = url.split("?")[0]
+        for n in range(2, 10):
+            f = f"{CRAWL}/albumpages/" + hashlib.md5(f"{base}?pg={n}".encode()).hexdigest() + ".html"
+            if not os.path.exists(f):
+                break
+            for mid, seg in _album_segments(open(f, encoding="utf-8", errors="ignore").read()):
+                extra.setdefault(mid, []).extend(re.findall(r'data-fancybox="group\d+"[^>]*?href=[\'"]([^\'"]+)[\'"]', seg))
+    out = []
+    for mid, seg in _album_segments(raw):
         t = re.search(r'<h2 class="headtitle">(.*?)</h2>', seg, re.S)
-        hrefs = list(dict.fromkeys(re.findall(r'data-fancybox="group\d+"[^>]*?href=[\'"]([^\'"]+)[\'"]', seg)))
+        hrefs = list(dict.fromkeys(re.findall(r'data-fancybox="group\d+"[^>]*?href=[\'"]([^\'"]+)[\'"]', seg) + extra.get(mid, [])))
         if hrefs:
             out.append({"title": html.unescape(re.sub(r"<[^>]+>", "", t.group(1)).strip()) if t else "", "photos": [photo(h) for h in hrefs]})
     def rank(a):
@@ -200,7 +214,7 @@ def object_albums(raw):
             if re.search(rx, tl):
                 return i
         return 50
-    return sorted(out, key=rank)
+    return sorted(out, key=rank) if ranked else out
 
 stays = []
 stay_files = {}
@@ -225,7 +239,7 @@ for p in pages:
             "prices": [{"period": x["period"].rstrip(".").strip(), "price": x["price"], "per": x["per"]} for x in r["periods"]],
         })
     prices = [x["price"] for r in rooms for x in r["prices"] if x["price"] > 0]
-    albums = object_albums(raw)
+    albums = object_albums(raw, p["url"])
     room_photos = [photo(x) for x in p["photos"]]
     photos = list(dict.fromkeys([x for a in albums for x in a["photos"]] + room_photos))
     all_photos = list(dict.fromkeys(photos + [x for r in rooms for x in r["photos"]]))
@@ -238,7 +252,7 @@ for p in pages:
         "oldUrl": p["url"],
         "type": CATS.get(cat, "guest"),
         "village": village,
-        "name": html.unescape(name),
+        "name": re.sub(r"\s+", " ", html.unescape(name)).strip(),
         "h1": p["h1"],
         "seoTitle": p["title"],
         "seoDescription": p["metaDescription"],
@@ -309,6 +323,8 @@ for p in pages:
     text_parts, rel = [], []
     for m in mods:
         mt = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)[^>]*>.*?</\1>", "", m, flags=re.S)))).strip()
+        if "ViewPhotoAlbumI" in m:
+            continue  # photo albums are exported separately (article["albums"])
         if "obj-thumbs" in m or "RestaurantsDetailsView" in m or (re.search(r"\d+ отзыв", mt) and "/katalog/" in m):
             rel += related_stays(m)
         elif BOILERPLATE.search(mt) or re.match(r"^\d\d\.\d\d\.\d{4}", mt) or "<input" in m or "<select" in m \
@@ -334,6 +350,7 @@ for p in pages:
         "seoDescription": p["metaDescription"],
         "html": "\n".join(text_parts),
         "relatedStays": list(dict.fromkeys(rel)),
+        "albums": object_albums(raw_html, p["url"], ranked=False),
         "village": find_village(p["url"].replace("-", " "), p["h1"] or "") if "/sela/" in new else None,
     })
 
@@ -369,7 +386,7 @@ def dump(path, obj):
 index = []
 for s in stays:
     dump(f"{OUT}/stays/{s['slug']}.json", s)
-    index.append({k: s[k] for k in ("slug", "type", "village", "name", "priceFrom", "rating", "reviewCount", "plan")} |
+    index.append({k: s[k] for k in ("slug", "type", "village", "name", "priceFrom", "rating", "reviewCount", "plan", "oldId")} |
                  {"photo": s["cover"] or (s["photos"][0] if s["photos"] else None), "photoCount": len(s["photos"])})
 dump(f"{OUT}/stays/index.json", index)
 for slug, items in reviews_by_slug.items():
