@@ -3,10 +3,10 @@
  * until hosts upload real photos. Same seed → same picture on server and client.
  */
 const MOODS = [
-  { sky: ["#7CC6E8", "#D6F0F7"], sun: "#FFF6D8", far: "#7FA6B8", near: "#3E6475", lake: ["#1FA3A6", "#0B5E6E"], shore: "#C9B07A" },
-  { sky: ["#F2A65A", "#FCE3B6"], sun: "#FFF1C9", far: "#B07A86", near: "#5A3E55", lake: ["#E08E5B", "#3B4C6B"], shore: "#8A6A4A" },
-  { sky: ["#9FB8D6", "#E9EEF5"], sun: "#FFFFFF", far: "#8FA0B8", near: "#46576E", lake: ["#5C9FB8", "#1F4C66"], shore: "#9AA68A" },
-  { sky: ["#5DA9D6", "#BEE3F0"], sun: "#FFFBEA", far: "#6E95A8", near: "#2F5560", lake: ["#169C9A", "#0A4F5E"], shore: "#7FA35A" },
+  { sky: ["#8CCBF0", "#EAF6FD"], sun: "#FFFFFF", far: "#9AAAB8", near: "#4A5561", lake: ["#2B9FE0", "#0F5F9A"], shore: "#B9C0C7" },
+  { sky: ["#B7DDF5", "#F5FAFE"], sun: "#FFFFFF", far: "#A7B3BE", near: "#3D454E", lake: ["#3AA8E6", "#155E94"], shore: "#9CA4AC" },
+  { sky: ["#A9C4DA", "#EEF2F6"], sun: "#FFFFFF", far: "#8E9AA6", near: "#353C44", lake: ["#4C9CCB", "#1B4F78"], shore: "#8C939A" },
+  { sky: ["#6FB8E8", "#D9EEFB"], sun: "#FFFFFF", far: "#8399AB", near: "#2E363F", lake: ["#1F95DA", "#0B4F86"], shore: "#C8CDD2" },
 ];
 
 function rnd(seed: number) {

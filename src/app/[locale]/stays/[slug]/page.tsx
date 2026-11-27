@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { getReviews, getStayBySlug, getStayIndex, getVillages, img, villageName, withImageBase } from "@/lib/content";
 import { LANDINGS } from "@/lib/landings";
-import { formatSom } from "@/lib/data";
+import { FromPrice, Money } from "@/components/Currency";
 import { SITE_URL } from "@/lib/site";
 import { Photo } from "@/components/Photo";
 import { LakeMap } from "@/components/LakeMap";
@@ -106,7 +106,7 @@ export default async function StayPage({ params }: P) {
                         {r.description && <p className="note" style={{ margin: 0 }}>{r.description}</p>}
                         <div className="prices">
                           {r.prices.length ? r.prices.map((p, j) => (
-                            <div key={j}><span>{p.period}</span><b>{formatSom(p.price)} {t("som")} <small className="note">/ {p.per}</small></b></div>
+                            <div key={j}><span>{p.period}</span><b><Money som={p.price} /> <small className="note">/ {p.per}</small></b></div>
                           )) : <div><span>{t("stay.priceOnRequest")}</span></div>}
                         </div>
                       </div>
@@ -135,7 +135,7 @@ export default async function StayPage({ params }: P) {
           <aside className="contact">
             <div>
               {stay.priceFrom
-                ? <><span className="big">{t("stay.from", { price: formatSom(stay.priceFrom) })}</span> <span className="note">{t("stay.perNight")}</span></>
+                ? <><span className="big">{<FromPrice text={t("stay.from", { price: "@@P@@" })} som={stay.priceFrom!} />}</span> <span className="note">{t("stay.perNight")}</span></>
                 : <span className="big" style={{ fontSize: 20 }}>{t("stay.priceOnRequest")}</span>}
             </div>
             <ContactButtons kind="stay" id={slug} phone={stay.whatsapp} whatsapp={stay.whatsapp}

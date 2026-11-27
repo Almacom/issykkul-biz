@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { villageName, type StaySummary, type Village } from "@/lib/content";
-import { formatSom } from "@/lib/data";
+import { FromPrice } from "./Currency";
 import { Photo } from "./Photo";
 
 export async function StayCard({ stay, villages }: { stay: StaySummary; villages: Village[] }) {
@@ -19,7 +19,7 @@ export async function StayCard({ stay, villages }: { stay: StaySummary; villages
         <h3>{stay.name}</h3>
         <div className="row">
           <span className="price">
-            {stay.priceFrom ? <>{t("stay.from", { price: formatSom(stay.priceFrom) })} <small>{t("stay.perNight")}</small></> : <small>{t("stay.priceOnRequest")}</small>}
+            {stay.priceFrom ? <>{<FromPrice text={t("stay.from", { price: "@@P@@" })} som={stay.priceFrom!} />} <small>{t("stay.perNight")}</small></> : <small>{t("stay.priceOnRequest")}</small>}
           </span>
           {stay.reviewCount > 0 && stay.rating ? (
             <span className="rating">★ {stay.rating.toFixed(1)} · {t("stay.reviewsN", { n: stay.reviewCount })}</span>

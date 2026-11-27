@@ -12,11 +12,14 @@ Owner works with Claude Code; explain changes in Russian.
 ## Stack
 - Next.js 15 App Router, TypeScript, plain CSS (`src/app/globals.css`, tokens on `:root`, light + dark).
 - i18n: next-intl. Locales `ru` (default, no URL prefix), `en`, `ky` (shown as "KG"). Texts in `src/messages/*.json` — every UI string goes into all three files.
-- Content migrated from the old site: JSON in `public/content/` (stays, articles, reviews, villages), read via `src/lib/content.ts` (ASSETS binding on Cloudflare, disk during build). Regenerate with `scripts/migrate/build_content.py <crawl_dir> .` — never edit the JSON by hand. `src/lib/data.ts` now only holds plan prices and demo transfer drivers. Planned DB: Supabase, draft in `supabase/schema.sql`.
+- Content migrated from the old site: JSON in `public/content/` (stays, articles, reviews, villages), read via `src/lib/content.ts` (ASSETS binding on Cloudflare, disk during build). Regenerate with `scripts/migrate/build_content.py <crawl_dir> .` — never edit the JSON by hand. `src/lib/data.ts` now only holds plan prices and demo transfer drivers. DB: Supabase, migrations in `supabase/migrations/` (see `supabase/README.md`).
 - Text pages (guide, blog, stories, category landings, FAQ, terms) are served by one catch-all route `src/app/[locale]/[...path]/page.tsx`; category landing filters live in `src/lib/landings.ts`.
 - SEO migration: `migration/url-map.json` (old URL → new). `scripts/migrate/build_redirects.py` turns it into `src/lib/redirects.json`, applied in `src/middleware.ts` (301 / 410). Canonical host `www.issykkul.biz`; other hosts get `X-Robots-Tag: noindex`. Migrated content is Russian only: EN/KY versions are noindex with canonical to RU.
 - Photos are in R2 bucket `issykkul-photos`, served from https://img.issykkul.biz (`NEXT_PUBLIC_IMAGE_BASE`); keys are lower-cased decoded paths (`migration/images.txt`). Old `/Portals/...` URLs 301 to it.
 - Hosting: Cloudflare Workers via OpenNext (`@opennextjs/cloudflare`, config in `wrangler.jsonc`, `open-next.config.ts`). Worker name `issykkul-biz`. Free plan limit 3 MB gzipped (currently ~1 MB) — check with `npx wrangler deploy --dry-run` after adding big dependencies. Domain registered at Namecheap, DNS already on Cloudflare (Free plan).
+- Currency: prices are stored in som; visitors switch сом / ₽ / $ / ₸ in the header (`src/components/Currency.tsx`). Rates = Mossovet "sell" column from akchabar.kg, fetched by `/api/rates` (edge-cached 6 h), fallback in `src/lib/currency.ts`. Host plan prices stay in som.
+- Palette: white, black, grey and azure (lake), tokens on `:root` in globals.css.
+- Accounts: Supabase email sign-in (`src/lib/supabase.ts`, publishable key); `/login`, `/cabinet`, `/admin` are client-rendered (`src/components/account/`). Contact clicks go to `contact_clicks` via `/api/track`. Card covers = old site's obj-thumbs (`migration/covers.json`, `scripts/migrate/collect_covers.py`).
 - Photos: `Scene` component draws placeholder landscapes until real photos exist.
 
 ## Commands
@@ -28,4 +31,4 @@ Owner works with Claude Code; explain changes in Russian.
 - `npm run deploy` — build and deploy to Cloudflare (normally done automatically from GitHub)
 
 ## Launch target: 10 January 2027
-Remaining: Supabase + owner auth & dashboard, admin panel, request form for Start plan, translations of migrated content, switch DNS (domain is already on Cloudflare; Pro plan cancelled).
+Remaining: show owner edits (DB) on public stay pages, email notifications to info@ about new claims, request form for Start plan, translations of migrated content, switch DNS (domain is already on Cloudflare; Pro plan cancelled).

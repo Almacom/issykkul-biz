@@ -25,7 +25,7 @@ export function LakeMap({ stays, villages, locale, highlight }: { stays: StaySum
         const showLabel = on || LABELLED.has(v.slug) || n >= 3;
         const dot = (
           <g transform={`translate(${xy[0]} ${xy[1]})`}>
-            <circle r={on ? 12 : n ? 7 + Math.min(n, 40) / 6 : 4} fill={on ? "var(--sand)" : n ? "var(--surface)" : "var(--line)"} stroke="var(--lake-deep)" strokeWidth={n || on ? 2.5 : 1} />
+            <circle r={on ? 12 : n ? 7 + Math.min(n, 40) / 6 : 4} fill={on ? "var(--lake)" : n ? "var(--surface)" : "var(--line)"} stroke="var(--lake-deep)" strokeWidth={n || on ? 2.5 : 1} />
             {n > 0 && <text y="5" textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--ink)">{n}</text>}
             {showLabel && <text y={north ? -16 - Math.min(n, 40) / 6 : 30} textAnchor="middle" fontSize="13" fill="var(--muted)">{v.name[locale]}</text>}
           </g>

@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import type { Driver } from "@/lib/data";
 import { ContactButtons } from "./ContactButtons";
+import { useMoney } from "./Currency";
 
 type Labels = { from: string; to: string; seats: string; years: string; perCar: string; empty: string; som: string; whatsapp: string; telegram: string; showPhone: string };
 
@@ -19,7 +20,7 @@ export function TransferPicker({ drivers, places, labels }: { drivers: Driver[];
   const to = tos.includes(toSel) ? toSel : tos[0];
   const priceOf = (d: Driver) => d.routes.find((r) => r.from === from && r.to === to)?.price;
   const list = drivers.filter((d) => priceOf(d) !== undefined).sort((a, b) => priceOf(a)! - priceOf(b)!);
-  const fmt = (n: number) => n.toLocaleString("ru-RU").replace(/ /g, " ");
+  const fmt = useMoney();
 
   return (
     <>
@@ -44,7 +45,7 @@ export function TransferPicker({ drivers, places, labels }: { drivers: Driver[];
               <div className="car">{d.car} · {labels.seats.replace("{n}", String(d.seats))} · {labels.years.replace("{n}", String(d.years))}</div>
             </div>
             <div className="acts">
-              <span className="price">{fmt(priceOf(d)!)} {labels.som} <small>{labels.perCar}</small></span>
+              <span className="price">{fmt(priceOf(d)!)} <small>{labels.perCar}</small></span>
               <ContactButtons kind="driver" id={d.id} phone={d.phone} whatsapp={d.whatsapp} small
                 labels={{ whatsapp: labels.whatsapp, telegram: labels.telegram, showPhone: labels.showPhone }} />
             </div>

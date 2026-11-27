@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { STAY_TYPES, byPromotion, getStayIndex, getVillages, type StayType } from "@/lib/content";
-import { formatSom } from "@/lib/data";
+import { Money } from "@/components/Currency";
 import { LakeMap } from "@/components/LakeMap";
 import { AutoSubmitForm } from "@/components/AutoSubmit";
 import { StayList } from "@/components/StayList";
@@ -72,7 +72,7 @@ export default async function StaysPage({ params, searchParams }: { params: Prom
               </div>
             </div>
             <div>
-              <h4>{t("stays.priceUpTo")}: {max >= MAX_PRICE ? "∞" : `${formatSom(max)} ${t("som")}`}</h4>
+              <h4>{t("stays.priceUpTo")}: {max >= MAX_PRICE ? "∞" : <Money som={max} />}</h4>
               <input type="range" name="max" min={500} max={MAX_PRICE} step={500} defaultValue={max} aria-label={t("stays.priceUpTo")} />
             </div>
             <Link className="btn ghost sm" href="/stays">{t("stays.reset")}</Link>

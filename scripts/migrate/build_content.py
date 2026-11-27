@@ -153,6 +153,30 @@ def photo(p):
     images.add(p)
     return img_url(p)
 
+# Card covers chosen on the old site (/Portals/0/obj-thumbs/<name>-270-203.jpg), collected from
+# the category listing pages by scripts/migrate/collect_covers.py. Where the cover is a copy of a
+# gallery photo, the full-size gallery photo is used instead of the small thumbnail.
+COVERS = json.load(open(f"{REPO}/migration/covers.json")) if os.path.exists(f"{REPO}/migration/covers.json") else {}
+
+def _ckey(path):
+    from urllib.parse import unquote
+    name = unquote(path.split("?")[0]).rsplit("/", 1)[-1].lower()
+    name = re.sub(r"-\d+-\d+(\.\w+)$", r"\1", name)          # drop -270-203 thumbnail suffix
+    name = re.sub(r"\.(jpe?g|png|gif|webp)$", "", name)
+    return re.sub(r"[^a-z0-9]", "", name)
+
+def pick_cover(slug, gallery, pool):
+    """Returns (cover_path, gallery_reordered). `pool` = gallery + room photos, searched for a full-size copy."""
+    thumb = COVERS.get(slug)
+    if not thumb:
+        return (gallery[0] if gallery else None), gallery
+    k = _ckey(thumb)
+    for g in pool:
+        gk = _ckey(g)
+        if len(k) >= 6 and (gk == k or gk.startswith(k) or (k.startswith(gk) and len(gk) >= 6)):
+            return g, [g] + [x for x in gallery if x != g]
+    return photo(thumb), gallery
+
 stays = []
 stay_files = {}
 for p in pages:
@@ -177,6 +201,10 @@ for p in pages:
         })
     prices = [x["price"] for r in rooms for x in r["prices"] if x["price"] > 0]
     photos = [photo(x) for x in p["photos"]]
+    all_photos = list(dict.fromkeys(photos + [x for r in rooms for x in r["photos"]]))
+    cover, photos_sorted = pick_cover(slug, photos if photos else all_photos, all_photos)
+    if photos:
+        photos = photos_sorted
     stay = {
         "slug": slug,
         "oldId": p["objectId"],
@@ -192,6 +220,7 @@ for p in pages:
         "priceNote": p["priceNote"],
         "rooms": rooms,
         "photos": photos,
+        "cover": cover,
         "priceFrom": min(prices) if prices else None,
         "rating": p["rating"],
         "reviewCount": p["reviewCount"],
@@ -302,7 +331,7 @@ index = []
 for s in stays:
     dump(f"{OUT}/stays/{s['slug']}.json", s)
     index.append({k: s[k] for k in ("slug", "type", "village", "name", "priceFrom", "rating", "reviewCount", "plan")} |
-                 {"photo": s["photos"][0] if s["photos"] else None, "photoCount": len(s["photos"])})
+                 {"photo": s["cover"] or (s["photos"][0] if s["photos"] else None), "photoCount": len(s["photos"])})
 dump(f"{OUT}/stays/index.json", index)
 for slug, items in reviews_by_slug.items():
     dump(f"{OUT}/reviews/{slug}.json", items)

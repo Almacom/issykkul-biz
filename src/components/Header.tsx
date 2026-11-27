@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LangSwitch } from "./LangSwitch";
 import { NavLinks } from "./NavLinks";
+import { CurrencySwitch } from "./Currency";
 
 export async function Header() {
   const t = await getTranslations("nav");
@@ -13,6 +14,7 @@ export async function Header() {
     { href: "/transfers", label: t("transfers") },
     { href: "/otzyvy", label: t("reviews") },
     { href: "/pricing", label: t("pricing") },
+    { href: "/cabinet", label: t("cabinet") },
   ];
   return (
     <header className="top">
@@ -26,7 +28,10 @@ export async function Header() {
           <span>Issykkul<b>.Biz</b></span>
         </Link>
         <NavLinks items={items} />
-        <Suspense fallback={<div className="langs" />}><LangSwitch /></Suspense>
+        <div className="top-tools">
+          <CurrencySwitch />
+          <Suspense fallback={<div className="langs" />}><LangSwitch /></Suspense>
+        </div>
       </div>
     </header>
   );
