@@ -8,7 +8,6 @@ import { CurrencySwitch } from "./Currency";
 export async function Header() {
   const t = await getTranslations("nav");
   const items = [
-    { href: "/", label: t("home") },
     { href: "/stays", label: t("stays") },
     { href: "/guide", label: t("guide") },
     { href: "/transfers", label: t("transfers") },
