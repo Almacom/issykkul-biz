@@ -123,7 +123,11 @@ export default async function StayPage({ params }: P) {
                 <div className="rooms">
                   {stay.rooms.map((r, i) => (
                     <div key={i} className={`room${r.photos.length ? "" : " noph"}`}>
-                      {r.photos.length > 0 && <div className="rph"><Photo src={r.photos[0]} alt={r.name} /></div>}
+                      {r.photos.length > 0 && (
+                        <GalleryViewer groups={[{ title: r.name, urls: r.photos.map((p) => img(p)!) }]} name={stay.name} compact>
+                          <div className="rph" data-i={0}><Photo src={r.photos[0]} alt={r.name} /></div>
+                        </GalleryViewer>
+                      )}
                       <div>
                         <h3>{r.name}</h3>
                         {r.description && <p className="note" style={{ margin: 0 }}>{r.description}</p>}

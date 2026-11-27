@@ -8,7 +8,7 @@ export type PhotoGroup = { title: string; urls: string[] };
  * Wraps the top photo grid of a stay: clicking a photo or "All photos" opens a full-screen
  * viewer with every photo grouped by album (grounds, beach, cafe…) and by room.
  */
-export function GalleryViewer({ groups, name, children }: { groups: PhotoGroup[]; name: string; children: React.ReactNode }) {
+export function GalleryViewer({ groups, name, children, compact }: { groups: PhotoGroup[]; name: string; children: React.ReactNode; compact?: boolean }) {
   const t = useTranslations("stay");
   const all = useMemo(() => groups.flatMap((g) => g.urls), [groups]);
   const [open, setOpen] = useState(false);
@@ -49,9 +49,17 @@ export function GalleryViewer({ groups, name, children }: { groups: PhotoGroup[]
   return (
     <div className="gv">
       <div className="gv-grid" onClick={onGridClick}>{children}</div>
-      <button type="button" className="btn sm gv-all" onClick={() => { setOpen(true); setCur(null); }}>
-        {t("allPhotos", { n: all.length })}
-      </button>
+      {compact ? (
+        all.length > 1 && (
+          <button type="button" className="gv-count-badge" onClick={() => { setOpen(true); setCur(0); }} aria-label={t("allPhotos", { n: all.length })}>
+            ▦ {all.length}
+          </button>
+        )
+      ) : (
+        <button type="button" className="btn sm gv-all" onClick={() => { setOpen(true); setCur(null); }}>
+          {t("allPhotos", { n: all.length })}
+        </button>
+      )}
 
       {open && (
         <div className="gv-modal" role="dialog" aria-modal="true" aria-label={name}>
