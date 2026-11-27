@@ -61,8 +61,6 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
           </form>
           <div className="facts">
             <div><b>{t("home.factYearsN", { n: SITE_YEARS })}</b>{t("home.factYears")}</div>
-            <div><b>1 607 м</b>{t("home.factAlt")}</div>
-            <div><b>182 км</b>{t("home.factLen")}</div>
             <div><b>{stays.length}</b>{t("home.factCount")}</div>
             <div><b>{reviewsTotal.toLocaleString("ru-RU")}</b>{t("nav.reviews").toLowerCase()}</div>
           </div>
@@ -89,7 +87,13 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
 
       <section className="block sec-tight">
         <div className="wrap">
-          <div className="sec-head"><div><h2>{t("home.shoreTitle")}</h2><p>{t("home.shoreLead")}</p></div></div>
+          <div className="sec-head">
+            <div><h2>{t("home.shoreTitle")}</h2><p>{t("home.shoreLead")}</p></div>
+            <div className="lake-facts">
+              <span><b>1 607 м</b> {t("home.factAlt")}</span>
+              <span><b>182 км</b> {t("home.factLen")}</span>
+            </div>
+          </div>
           <div className="villages">
             {FEATURED_VILLAGES.map((slug, i) => {
               const v = villages.find((x) => x.slug === slug);
