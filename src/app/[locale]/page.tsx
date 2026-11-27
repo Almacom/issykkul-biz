@@ -6,13 +6,17 @@ import { Scene } from "@/components/Scene";
 import { StayCard } from "@/components/StayCard";
 import { Photo } from "@/components/Photo";
 
-const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "tamga"];
+/** The site has worked since 2010 (17 years at the 2027 relaunch); grows by itself every year. */
+const SITE_YEARS = Math.max(17, new Date().getFullYear() - 2010);
+
+const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "kadzhi-say"];
 
 /** Real photos for the village cards (own photos from the old site or free-licensed ones); others keep the drawn scene. */
 const VILLAGE_PHOTOS: Record<string, string> = {
   bosteri: "/portals/0/bosteri-koleso-obozrenie.jpg",
   "cholpon-ata": "/site/cholpon-ata-800.jpg",
   karakol: "/site/karakol-800.jpg",
+  "kadzhi-say": "/site/kadzhi-say-800.jpg",
 };
 
 export default async function Home({ params }: { params: Promise<{ locale: Locale }> }) {
@@ -56,6 +60,7 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
             <button className="btn" type="submit">{t("home.search")}</button>
           </form>
           <div className="facts">
+            <div><b>{t("home.factYearsN", { n: SITE_YEARS })}</b>{t("home.factYears")}</div>
             <div><b>1 607 м</b>{t("home.factAlt")}</div>
             <div><b>182 км</b>{t("home.factLen")}</div>
             <div><b>{stays.length}</b>{t("home.factCount")}</div>

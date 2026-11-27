@@ -45,7 +45,9 @@
     "cta2": "айына",
     "cta3v": "3 тил",
     "cta4v": "16 жыл",
-    "cta4": "Issykkul.Biz сайтына"
+    "cta4": "Issykkul.Biz сайтына",
+    "factYearsN": "{n} жыл",
+    "factYears": "2010-жылдан бери Ысык-Көлдө"
   },
   "stays": {
     "title": "Ысык-Көлдөгү турак жай",

@@ -45,7 +45,9 @@
     "cta2": "в месяц",
     "cta3v": "3 языка",
     "cta4v": "16 лет",
-    "cta4": "сайту Issykkul.Biz"
+    "cta4": "сайту Issykkul.Biz",
+    "factYearsN": "{n, plural, one {# год} few {# года} many {# лет} other {# лет}}",
+    "factYears": "с 2010 года на Иссык-Куле"
   },
   "stays": {
     "title": "Жильё на Иссык-Куле",

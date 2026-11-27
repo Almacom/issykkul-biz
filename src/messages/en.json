@@ -45,7 +45,9 @@
     "cta2": "per month",
     "cta3v": "3 languages",
     "cta4v": "16 years",
-    "cta4": "of Issykkul.Biz"
+    "cta4": "of Issykkul.Biz",
+    "factYearsN": "{n} years",
+    "factYears": "on Issyk-Kul since 2010"
   },
   "stays": {
     "title": "Stays on Issyk-Kul",
