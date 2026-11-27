@@ -216,6 +216,9 @@ def object_albums(raw, url=None, ranked=True):
         return 50
     return sorted(out, key=rank) if ranked else out
 
+# village pages whose names the regexes miss
+SELA_VILLAGE = {"ornok": "ornok", "korumdu": "korumdu", "balykchy": "balykchy"}
+
 stays = []
 stay_files = {}
 for p in pages:
@@ -351,7 +354,7 @@ for p in pages:
         "html": "\n".join(text_parts),
         "relatedStays": list(dict.fromkeys(rel)),
         "albums": object_albums(raw_html, p["url"], ranked=False),
-        "village": find_village(p["url"].replace("-", " "), p["h1"] or "") if "/sela/" in new else None,
+        "village": (SELA_VILLAGE.get(new.rsplit("/", 1)[-1]) or find_village(p["url"].replace("-", " "), p["h1"] or "")) if "/sela/" in new else None,
     })
 
 # ---------- FAQ (answers were loaded by AJAX on the old site; fetched separately into faq.json) ----------

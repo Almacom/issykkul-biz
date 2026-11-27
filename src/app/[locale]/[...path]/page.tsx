@@ -9,11 +9,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import {
-  byPromotion, getArticle, getArticleIndex, getReviews, getStayIndex, getVillages, type ArticleSummary, type Review,
+  byPromotion, getArticle, getArticleIndex, getReviews, getStayIndex, getVillages, villageName, type ArticleSummary, type Review,
 } from "@/lib/content";
 import { LANDINGS, landingStays } from "@/lib/landings";
 import { ArticleBody } from "@/components/ArticleBody";
 import { ArticleAlbums } from "@/components/ArticleAlbums";
+import { Photo } from "@/components/Photo";
+import { Scene } from "@/components/Scene";
+import { VILLAGE_XY } from "@/lib/geo";
 import { StayCard } from "@/components/StayCard";
 import { Reviews } from "@/components/Reviews";
 
@@ -68,7 +71,24 @@ export default async function TextPage({ params }: P) {
   const isLanding = !!LANDINGS[landingKey];
   const sectionKey = p.slice(1);
   const isSectionIndex = SECTIONS.includes(sectionKey);
-  const stays = (isLanding || article?.relatedStays.length) ? await getStayIndex() : [];
+  // Village guide pages: stays in the village first, then the article, then nearby villages.
+  const villageSlug = article?.section === "guide/sela" ? article.village : null;
+  const stays = (isLanding || villageSlug || article?.relatedStays.length) ? await getStayIndex() : [];
+  const villageStays = villageSlug ? stays.filter((s) => s.village === villageSlug).sort(byPromotion) : [];
+  const nearby = villageSlug && VILLAGE_XY[villageSlug]
+    ? Object.entries(VILLAGE_XY)
+        .filter(([slug]) => slug !== villageSlug)
+        .map(([slug, [x, y]]) => {
+          const [vx, vy] = VILLAGE_XY[villageSlug];
+          const list = stays.filter((s) => s.village === slug).sort(byPromotion);
+          const page = idx.find((a) => a.section === "guide/sela" && a.village === slug)?.path;
+          return { slug, dist: Math.hypot(x - vx, y - vy), count: list.length, photo: list.find((s) => s.photo)?.photo ?? null, href: page ?? `/stays?village=${slug}` };
+        })
+        .filter((v) => v.count > 0)
+        .sort((a, b) => a.dist - b.dist)
+        .slice(0, 8)
+    : [];
+  const villageTitle = villageSlug ? villageName(villages, villageSlug, locale) : "";
   const landingList = isLanding ? landingStays(landingKey, stays, article?.relatedStays ?? []).sort(byPromotion) : [];
   const related = !isLanding && article?.relatedStays.length
     ? article.relatedStays.map((s) => stays.find((x) => x.slug === s)).filter((x): x is NonNullable<typeof x> => !!x).slice(0, 8)
@@ -111,7 +131,46 @@ export default async function TextPage({ params }: P) {
           </div>
         )}
 
-        {article && (
+        {article && villageSlug && (
+          <div style={{ display: "grid", gap: 44 }}>
+            <div>
+              <div className="kicker">{t("guide.vStaysKicker")}</div>
+              <h2 className="vsec">{t("guide.vStaysTitle", { name: villageTitle })}</h2>
+              {villageStays.length > 0 ? (
+                <>
+                  <p className="note">{t("stays.found", { count: villageStays.length })}</p>
+                  <div className="grid">{villageStays.map((s) => <StayCard key={s.slug} stay={s} villages={villages} />)}</div>
+                </>
+              ) : (
+                <p className="note">{t("guide.vStaysNone")} <Link href="/stays">{t("home.seeAll")} →</Link></p>
+              )}
+            </div>
+            <div style={{ display: "grid", gap: 24 }}>
+              <div>
+                <div className="kicker">{t("guide.vInfoKicker")}</div>
+                <h2 className="vsec">{t("guide.vInfoTitle", { name: villageTitle })}</h2>
+              </div>
+              {article.html && <ArticleBody html={article.html} />}
+              {article.albums?.length ? <ArticleAlbums albums={article.albums} name={villageTitle} /> : null}
+            </div>
+            {nearby.length > 0 && (
+              <div>
+                <div className="kicker">{t("guide.vNearKicker")}</div>
+                <h2 className="vsec">{t("guide.vNearTitle")}</h2>
+                <div className="villages">
+                  {nearby.map((v, i) => (
+                    <Link key={v.slug} className="vcard" href={v.href}>
+                      {v.photo ? <Photo src={v.photo} alt={villageName(villages, v.slug, locale)} /> : <Scene seed={40 + i} mood={i % 4} horizon={200} />}
+                      <span><b>{villageName(villages, v.slug, locale)}</b><small>{t("stays.found", { count: v.count })}</small></span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {article && !villageSlug && (
           <div style={{ display: "grid", gap: 30 }}>
             {article.html && <ArticleBody html={article.html} />}
             {article.albums?.length ? <ArticleAlbums albums={article.albums} name={article.h1} /> : null}

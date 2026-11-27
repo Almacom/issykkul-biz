@@ -262,7 +262,14 @@
       "rasskazy": "Travellers' stories"
     },
     "ruOnly": "This article is available in Russian only for now.",
-    "all": "All articles"
+    "all": "All articles",
+    "vStaysKicker": "Accommodation",
+    "vStaysTitle": "Where to stay: {name}",
+    "vStaysNone": "No listings here yet.",
+    "vInfoKicker": "About the place",
+    "vInfoTitle": "Tourist info: {name}",
+    "vNearKicker": "Nearby",
+    "vNearTitle": "Accommodation in nearby villages"
   },
   "pager": {
     "page": "Page {n}"
