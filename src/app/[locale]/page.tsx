@@ -1,11 +1,17 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { STAY_TYPES, byPromotion, getArticleIndex, getStayIndex, getVillages } from "@/lib/content";
+import { IMAGE_BASE, STAY_TYPES, byPromotion, getArticleIndex, getStayIndex, getVillages } from "@/lib/content";
 import { Scene } from "@/components/Scene";
 import { StayCard } from "@/components/StayCard";
+import { Photo } from "@/components/Photo";
 
 const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "tamga"];
+
+/** Real photos for the village cards (own photos from the old site or free-licensed ones); others keep the drawn scene. */
+const VILLAGE_PHOTOS: Record<string, string> = {
+  bosteri: "/portals/0/bosteri-koleso-obozrenie.jpg",
+};
 
 export default async function Home({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
@@ -20,7 +26,11 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
   return (
     <>
       <section className="hero">
-        <Scene seed={5} mood={0} horizon={250} className="scene" />
+        {/* Lake Issyk-Kul near Cholpon-Ata, photo by Bgag, CC0 (Wikimedia Commons). Stored in R2 under site/. */}
+        <picture className="scene">
+          <source type="image/webp" srcSet={`${IMAGE_BASE}/site/hero-1000.webp 1000w, ${IMAGE_BASE}/site/hero-1920.webp 1920w`} sizes="100vw" />
+          <img src={`${IMAGE_BASE}/site/hero-1920.jpg`} srcSet={`${IMAGE_BASE}/site/hero-1000.jpg 1000w, ${IMAGE_BASE}/site/hero-1920.jpg 1920w`} sizes="100vw" alt={t("home.eyebrow")} fetchPriority="high" />
+        </picture>
         <div className="shade" />
         <div className="wrap">
           <div className="eyebrow">{t("home.eyebrow")}</div>
@@ -80,7 +90,9 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
               const n = stays.filter((s) => s.village === slug).length;
               return (
                 <Link key={slug} className="vcard" href={{ pathname: "/stays", query: { village: slug } }}>
-                  <Scene seed={31 + i * 13} mood={i % 4} horizon={200} />
+                  {VILLAGE_PHOTOS[slug]
+                    ? <Photo src={VILLAGE_PHOTOS[slug]} alt={v.name[locale]} />
+                    : <Scene seed={31 + i * 13} mood={i % 4} horizon={200} />}
                   <span><b>{v.name[locale]}</b><small>{t(`shore.${v.shore}`)} · {t("stays.found", { count: n })}</small></span>
                 </Link>
               );

@@ -42,8 +42,8 @@ nav.main a.on,nav.main a:hover{color:var(--ink);background:var(--lake-soft)}
 /* hero */
 .hero{position:relative;color:#fff;overflow:hidden}
 .hero .scene{position:absolute;inset:0}
-.hero .scene svg{width:100%;height:100%;display:block}
-.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,30,38,.55) 0%,rgba(5,30,38,.35) 55%,rgba(5,30,38,.7) 100%)}
+.hero .scene svg,.hero .scene img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 40%}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,18,.55) 0%,rgba(10,14,18,.25) 50%,rgba(10,14,18,.6) 100%)}
 .hero h1,.hero p.lead{text-shadow:0 2px 18px rgba(0,0,0,.35)}
 .hero .wrap{position:relative;padding-block:96px 40px;display:grid;gap:20px}
 .eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;opacity:.9}
@@ -74,6 +74,7 @@ section.block{padding-block:56px}
 .villages{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .vcard{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;max-width:100%;cursor:pointer;border:0;padding:0;text-align:left;color:#fff;background:var(--lake-deep)}
 .vcard svg{position:absolute;inset:0;width:100%;height:100%}
+.vcard::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.55))}
 .vcard span{position:absolute;left:14px;bottom:12px;right:14px;z-index:1;text-shadow:0 1px 8px rgba(0,0,0,.5)}
 .vcard b{display:block;font-family:var(--f-display);font-size:17px}
 .vcard small{font-size:13px;opacity:.95}
