@@ -15,6 +15,17 @@ const TYPE_LANDING: Record<string, string> = Object.fromEntries(
   Object.entries(LANDINGS).filter(([, l]) => l.types?.length === 1 && !l.village).map(([slug, l]) => [l.types![0], slug]),
 );
 
+/** Photo per accommodation category that shows what it is (picked from the listings' own grounds albums). */
+const CATEGORY_PHOTOS: Record<string, string> = {
+  guest: "/portals/0/gha_imgs/adilet-dvor/dvor-gostevoy-dom-adilet-na-issyk-kule-17_56.jpg",
+  cottage: "/portals/0/gha_imgs/sanrayz-villas-v-pansionate-kolumb/vid-kottedzha-sanrayz-villas41_662.jpg",
+  pansionat: "/portals/0/gha_imgs/vavilon-territoriya/lyuks-2-kh-mestnyy-v-domakh-pansionat-vavilon-na-issyk-kule6.jpg_851_34.jpg",
+  hotel: "/portals/0/gha_imgs/delfin/%D0%B4%D0%B5%D0%BB%D1%8C%D1%84%D0%B8%D0%BD%20%D0%B4%D0%B5%20%D0%BB%D1%8E%D0%BA%D1%81%201.jpg",
+  minipansionat: "/portals/0/gha_imgs/valencia/valencia1.jpg",
+  resort: "/portals/0/gha_imgs/capriz/capriz2.jpg",
+  sanatorium: "/portals/0/gha_imgs/goluboi-issykkul/stolovaya-goluboi-issykkul-14_242.jpg",
+};
+
 const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "kadzhi-say"];
 
 /** Real photos for the village cards (own photos from the old site or free-licensed ones); others keep the drawn scene. */
@@ -42,7 +53,7 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
   const categories = STAY_TYPES.map((type) => {
     const list = stays.filter((s) => s.type === type);
     const best = [...list].filter((s) => s.photo).sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0))[0];
-    return { type, count: list.length, photo: best?.photo ?? null, href: TYPE_LANDING[type] ? `/${TYPE_LANDING[type]}` : `/stays?type=${type}` };
+    return { type, count: list.length, photo: CATEGORY_PHOTOS[type] ?? best?.photo ?? null, href: TYPE_LANDING[type] ? `/${TYPE_LANDING[type]}` : `/stays?type=${type}` };
   }).filter((c) => c.count > 0).sort((a, b) => b.count - a.count);
   const reviewsTotal = stays.reduce((n, s) => n + (s.reviewCount || 0), 0);
   const withStays = villages.filter((v) => stays.some((s) => s.village === v.slug));
