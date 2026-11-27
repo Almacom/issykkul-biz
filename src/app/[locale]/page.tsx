@@ -24,7 +24,11 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
   setRequestLocale(locale);
   const t = await getTranslations();
   const [stays, villages, articles] = await Promise.all([getStayIndex(), getVillages(), getArticleIndex()]);
-  const top = [...stays].sort(byPromotion).slice(0, 8);
+  // Home "Popular with tourists": Premium listings only once there are enough of them (a paid perk);
+  // until then Premium first, the rest filled by number of reviews and rating.
+  const sorted = [...stays].sort(byPromotion);
+  const premium = sorted.filter((s) => s.plan === "premium");
+  const top = (premium.length >= 4 ? premium : sorted).slice(0, 8);
   const reviewsTotal = stays.reduce((n, s) => n + (s.reviewCount || 0), 0);
   const withStays = villages.filter((v) => stays.some((s) => s.village === v.slug));
   const guides = articles.filter((a) => a.section === "guide/sela" || a.section === "guide/ekskursii").slice(0, 6);
