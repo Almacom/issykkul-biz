@@ -28,7 +28,10 @@ export interface Listing {
   whatsapp: string | null;
   telegram: string | null;
   phone: string | null;
-  data: { description?: string; priceFrom?: number; village?: string };
+  data: {
+    description?: string; priceFrom?: number; village?: string; type?: string;
+    free?: string[]; paid?: { name: string; price: number | null }[];
+  };
   legacy_id: number | null;
   updated_at: string;
 }

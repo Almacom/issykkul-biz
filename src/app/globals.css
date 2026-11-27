@@ -353,3 +353,19 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .feat-rows li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:15px}
 .feat-rows .feat-name{display:flex;align-items:center;gap:10px}
 .feat-rows b{white-space:nowrap;font-weight:700}
+
+/* owner editor: amenities and paid services */
+.acc-fs{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:10px;margin:0}
+.acc-fs legend{font-size:13px;font-weight:700;color:var(--muted);padding:0 6px}
+.acc-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px 14px}
+.acc-form .acc-check{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--ink)}
+.acc-form .acc-check input{width:18px;height:18px;padding:0;accent-color:var(--lake)}
+.acc-paid{display:grid;grid-template-columns:1fr 130px auto;gap:8px}
+.acc-paid input{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:15px}
+.acc-fs > .btn{justify-self:start}
+
+/* "N more reviews" expands the rest */
+.more-reviews > summary{list-style:none;justify-self:start;width:fit-content}
+.more-reviews > summary::-webkit-details-marker{display:none}
+.more-reviews[open] > summary{display:none}
+.more-reviews > .reviews{margin-top:0}

@@ -4,9 +4,7 @@ import type { Review } from "@/lib/content";
 export async function Reviews({ reviews, limit = 20 }: { reviews: Review[]; limit?: number }) {
   const t = await getTranslations("reviews");
   if (!reviews.length) return null;
-  return (
-    <div className="reviews">
-      {reviews.slice(0, limit).map((r) => (
+  const card = (r: Review) => (
         <article key={r.id} className="review">
           <header>
             <div className="ava">{(r.author || "?")[0]}</div>
@@ -19,8 +17,17 @@ export async function Reviews({ reviews, limit = 20 }: { reviews: Review[]; limi
           {r.title && <h3>{r.title}</h3>}
           <p>{r.text}</p>
         </article>
-      ))}
-      {reviews.length > limit && <p className="note">{t("more", { n: reviews.length - limit })}</p>}
+  );
+  // All reviews are in the HTML (good for search engines); the rest open with a native <details>, no JS needed.
+  return (
+    <div className="reviews">
+      {reviews.slice(0, limit).map(card)}
+      {reviews.length > limit && (
+        <details className="more-reviews">
+          <summary className="btn ghost">{t("more", { n: reviews.length - limit })}</summary>
+          <div className="reviews">{reviews.slice(limit).map(card)}</div>
+        </details>
+      )}
     </div>
   );
 }

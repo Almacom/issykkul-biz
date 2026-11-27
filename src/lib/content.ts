@@ -169,6 +169,13 @@ export const getStayBySlug = async (slug: string): Promise<Stay | null> => {
         whatsapp: "",
       };
   if (r?.data?.description) stay.descriptionHtml = textToHtml(r.data.description);
+  if (r?.data?.free || r?.data?.paid) {
+    stay.info = {
+      ...(stay.info ?? {}),
+      ...(r.data.free ? { free: r.data.free } : {}),
+      ...(r.data.paid ? { paid: r.data.paid.map((p) => ({ name: p.name, price: p.price, text: "" })) } : {}),
+    };
+  }
   const c = visibleContacts(stay.plan, r ?? { whatsapp: base?.whatsapp });
   return { ...stay, whatsapp: c.whatsapp, telegram: c.telegram, phone: c.phone, directContacts: c.direct };
 };

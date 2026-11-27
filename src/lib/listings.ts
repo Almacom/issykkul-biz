@@ -17,7 +17,11 @@ export interface DbListing {
   whatsapp: string | null;
   telegram: string | null;
   phone: string | null;
-  data: { description?: string; priceFrom?: number; village?: string; type?: string };
+  data: {
+    description?: string; priceFrom?: number; village?: string; type?: string;
+    /** Owner-edited amenities and paid services; override the migrated ones when set. */
+    free?: string[]; paid?: { name: string; price: number | null }[];
+  };
   legacy_id: number | null;
   created_at: string;
 }

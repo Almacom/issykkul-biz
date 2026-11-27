@@ -371,7 +371,14 @@
       "approved": "approved",
       "rejected": "rejected"
     },
-    "fType": "Type of accommodation"
+    "fType": "Type of accommodation",
+    "fFree": "Free amenities",
+    "fFreeOther": "Other amenity…",
+    "fPaid": "Paid services",
+    "fPaidName": "Name, e.g. “Sauna”",
+    "fPaidPrice": "Price, som",
+    "fPaidAdd": "+ Add service",
+    "remove": "Remove"
   },
   "currency": {
     "label": "Currency",
