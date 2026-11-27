@@ -243,7 +243,9 @@
     "more": "{n} more reviews",
     "title": "Traveller reviews",
     "lead": "Guest reviews of hotels, pansionats and guesthouses on Issyk-Kul.",
-    "about": "Reviewed place"
+    "about": "Reviewed place",
+    "pageLead": "{n} genuine guest reviews of hotels, pansionats and guesthouses on Issyk-Kul. Below are the latest 60; all reviews are on each listing's page.",
+    "allOf": "{n, plural, one {# review} other {# reviews}}"
   },
   "guide": {
     "title": "Issyk-Kul travel guide",

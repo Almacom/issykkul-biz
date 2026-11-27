@@ -9,7 +9,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import {
-  byPromotion, getArticle, getArticleIndex, getReviews, getStayIndex, getVillages, villageName, type ArticleSummary, type Review,
+  byPromotion, getArticle, getArticleIndex, getReviews, getStayIndex, getVillages, villageName, type ArticleSummary, type Review, type StaySummary,
 } from "@/lib/content";
 import { LANDINGS, landingStays } from "@/lib/landings";
 import { ArticleBody } from "@/components/ArticleBody";
@@ -93,7 +93,9 @@ export default async function TextPage({ params }: P) {
   const related = !isLanding && article?.relatedStays.length
     ? article.relatedStays.map((s) => stays.find((x) => x.slug === s)).filter((x): x is NonNullable<typeof x> => !!x).slice(0, 8)
     : [];
-  const reviews: (Review & { stay: { slug: string; name: string } })[] = p === "/otzyvy" || p === "/otzyvy/s-foto" ? await latestReviews(60) : [];
+  const isReviewsPage = p === "/otzyvy" || p === "/otzyvy/s-foto";
+  const reviews: (Review & { stay: StaySummary })[] = isReviewsPage ? await latestReviews(60) : [];
+  const reviewsTotal = isReviewsPage ? (await getStayIndex()).reduce((n, s) => n + (s.reviewCount || 0), 0) : 0;
 
   const crumbSection = article && SECTIONS.find((s) => s !== "guide" && article.section === s);
 
@@ -185,21 +187,27 @@ export default async function TextPage({ params }: P) {
                 {childrenOf(sectionKey, idx, p).map((a) => <li key={a.path}><Link href={a.path}>{a.h1}</Link></li>)}
               </ul>
             )}
-            {related.length > 0 && (
+            {related.length > 0 && !isReviewsPage && (
               <div>
                 <h2 style={{ fontSize: 22, marginBottom: 12 }}>{t("guide.where")}</h2>
                 <div className="grid">{related.map((s) => <StayCard key={s.slug} stay={s} villages={villages} />)}</div>
               </div>
             )}
             {reviews.length > 0 && (
-              <div className="reviews">
-                {reviews.map((r) => (
-                  <div key={r.id}>
-                    <p className="note" style={{ margin: "0 0 6px" }}>{t("reviews.about")}: <Link href={`/stays/${r.stay.slug}`}>{r.stay.name}</Link></p>
-                    <Reviews reviews={[r]} />
-                  </div>
-                ))}
-              </div>
+              <>
+                <p className="note" style={{ fontSize: 17, margin: 0 }}>{t("reviews.pageLead", { n: reviewsTotal.toLocaleString("ru-RU") })}</p>
+                <div className="reviews">
+                  {reviews.map((r) => (
+                    <div key={r.id} className="rv-item">
+                      <Link className="rv-stay" href={`/stays/${r.stay.slug}`}>
+                        <span className="ph"><Photo src={r.stay.photo} alt={r.stay.name} seed={r.stay.name.length} /></span>
+                        <span><b>{r.stay.name}</b><small>{t(`types.${r.stay.type}`)} · {villageName(villages, r.stay.village, locale)} · {t("reviews.allOf", { n: r.stay.reviewCount })}</small></span>
+                      </Link>
+                      <Reviews reviews={[r]} />
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}

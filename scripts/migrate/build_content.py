@@ -216,6 +216,40 @@ def object_albums(raw, url=None, ranked=True):
         return 50
     return sorted(out, key=rank) if ranked else out
 
+REVIEW_MARK = re.compile(r"GHExtensionsRevs|Дата отзыва|traveledwith_ico|rec_rec_12x12")
+
+def strip_review_widgets(h):
+    """Removes the old site's embedded review lists (tables with dates, scores and icons) from page HTML."""
+    out, i = [], 0
+    while True:
+        a = h.find("<table", i)
+        if a < 0:
+            out.append(h[i:])
+            break
+        depth, j = 0, a
+        for m in re.finditer(r"<(/?)table\b", h[a:]):
+            depth += -1 if m.group(1) else 1
+            if depth == 0:
+                j = a + m.end()
+                j = h.find(">", j) + 1
+                break
+        else:
+            j = len(h)
+        block = h[a:j]
+        out.append(h[i:a])
+        if not REVIEW_MARK.search(block):
+            out.append(block)
+        i = j
+    h = "".join(out)
+    h = re.sub(r"<div>\s*<b>Сортировать по</b>.*?</div>", "", h, flags=re.S)
+    h = re.sub(r"<h2>[^<]*(реальных отзывов|подлинные отзывы)[^<]*</h2>", "", h)
+    # pager of the old review list: links "1 2 3 … › »" with hidden inputs
+    h = re.sub(r'(?:<a[^>]*>\s*(?:\d+|&[lr]saquo;|&[lr]aquo;|[‹›«»])\s*</a>\s*(?:<input[^>]*>\s*)?){3,}', "", h)
+    h = re.sub(r"<input[^>]*>", "", h)
+    if not re.sub(r"<[^>]+>|\s|&nbsp;", "", h):
+        return ""
+    return h
+
 # village pages whose names the regexes miss
 SELA_VILLAGE = {"ornok": "ornok", "korumdu": "korumdu", "balykchy": "balykchy"}
 
@@ -328,6 +362,8 @@ for p in pages:
         mt = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)[^>]*>.*?</\1>", "", m, flags=re.S)))).strip()
         if "ViewPhotoAlbumI" in m:
             continue  # photo albums are exported separately (article["albums"])
+        if "GHExtensionsRevs" in m or "Дата отзыва" in m or "Сортировать по" in m:
+            continue  # old review widgets: reviews are rendered from reviews/*.json instead
         if "obj-thumbs" in m or "RestaurantsDetailsView" in m or (re.search(r"\d+ отзыв", mt) and "/katalog/" in m):
             rel += related_stays(m)
         elif BOILERPLATE.search(mt) or re.match(r"^\d\d\.\d\d\.\d{4}", mt) or "<input" in m or "<select" in m \
@@ -351,7 +387,7 @@ for p in pages:
         "h1": H1_OVERRIDE.get(new) or p["h1"] or p["title"],
         "seoTitle": p["title"],
         "seoDescription": p["metaDescription"],
-        "html": "\n".join(text_parts),
+        "html": strip_review_widgets("\n".join(text_parts)),
         "relatedStays": list(dict.fromkeys(rel)),
         "albums": object_albums(raw_html, p["url"], ranked=False),
         "village": (SELA_VILLAGE.get(new.rsplit("/", 1)[-1]) or find_village(p["url"].replace("-", " "), p["h1"] or "")) if "/sela/" in new else None,
