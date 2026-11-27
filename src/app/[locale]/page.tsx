@@ -11,6 +11,7 @@ const FEATURED_VILLAGES = ["cholpon-ata", "bosteri", "karakol", "tamga"];
 /** Real photos for the village cards (own photos from the old site or free-licensed ones); others keep the drawn scene. */
 const VILLAGE_PHOTOS: Record<string, string> = {
   bosteri: "/portals/0/bosteri-koleso-obozrenie.jpg",
+  "cholpon-ata": "/site/cholpon-ata-800.jpg",
   karakol: "/site/karakol-800.jpg",
 };
 
