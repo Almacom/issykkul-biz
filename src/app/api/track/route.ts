@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase";
+import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase-config";
 
 const CHANNELS = new Set(["whatsapp", "telegram", "phone"]);
 

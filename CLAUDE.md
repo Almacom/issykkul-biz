@@ -20,6 +20,7 @@ Owner works with Claude Code; explain changes in Russian.
 - Currency: prices are stored in som; visitors switch сом / ₽ / $ / ₸ in the header (`src/components/Currency.tsx`). Rates = Mossovet "sell" column from akchabar.kg, fetched by `/api/rates` (edge-cached 6 h), fallback in `src/lib/currency.ts`. Host plan prices stay in som.
 - Palette: white, black, grey and azure (lake), tokens on `:root` in globals.css.
 - Accounts: Supabase email sign-in (`src/lib/supabase.ts`, publishable key); `/login`, `/cabinet`, `/admin` are client-rendered (`src/components/account/`). Contact clicks go to `contact_clicks` via `/api/track`. Card covers = old site's obj-thumbs (`migration/covers.json`, `scripts/migrate/collect_covers.py`). Stay page gallery: object albums (grounds, beach, cafe…) first, then rooms; full viewer in `src/components/GalleryViewer.tsx`.
+- DB → public pages: `src/lib/listings.ts` reads published `listings` at build time (fresh every build, falls back to the JSON if Supabase is down); `getStayIndex` / `getStayBySlug` in `content.ts` merge owner edits (name, description, priceFrom, contacts), plans (expired → Start) and append listings added in the dashboard. Contacts on stay pages also refresh live in the browser (`ContactButtons live`). Start plan shows the agency WhatsApp instead of the host's. Anything other than contacts appears after the next deploy (push or retry in Cloudflare).
 - Photos: `Scene` component draws placeholder landscapes until real photos exist.
 
 ## Commands
@@ -31,4 +32,4 @@ Owner works with Claude Code; explain changes in Russian.
 - `npm run deploy` — build and deploy to Cloudflare (normally done automatically from GitHub)
 
 ## Launch target: 10 January 2027
-Remaining: show owner edits (DB) on public stay pages, email notifications to info@ about new claims, request form for Start plan, translations of migrated content, switch DNS (domain is already on Cloudflare; Pro plan cancelled).
+Remaining: one-click site rebuild from the admin panel (needs a Cloudflare token with Workers Builds access), drivers from the DB on /transfers, owner photo upload, email notifications to info@ about new claims, request form for Start plan, translations of migrated content, switch DNS (domain is already on Cloudflare; Pro plan cancelled).

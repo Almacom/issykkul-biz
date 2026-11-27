@@ -1,10 +1,12 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { supabase, makeSlug, type Claim, type Listing } from "@/lib/supabase";
 import { useAccount } from "./useAccount";
 import { ListingEditor } from "./ListingEditor";
+
+const STAY_TYPE_KEYS = ["guest", "cottage", "pansionat", "minipansionat", "hotel", "resort", "sanatorium", "yurt"] as const;
 
 const AGENCY_WA = "996505581681";
 
@@ -169,7 +171,13 @@ function ClaimSearch({ uid, claimed, onDone }: { uid: string; claimed: number[];
 function NewListing({ uid, onDone }: { uid: string; onDone: () => void }) {
   const t = useTranslations("account");
   const [show, setShow] = useState(false);
-  const [f, setF] = useState({ name: "", kind: "stay", village: "", whatsapp: "", phone: "", description: "" });
+  const tt = useTranslations("types");
+  const locale = useLocale();
+  const [f, setF] = useState({ name: "", kind: "stay", type: "guest", village: "", whatsapp: "", phone: "", priceFrom: "", description: "" });
+  const [villages, setVillages] = useState<{ slug: string; name: Record<string, string> }[]>([]);
+  useEffect(() => {
+    if (show && !villages.length) fetch("/content/villages.json").then((r) => r.json()).then(setVillages).catch(() => {});
+  }, [show, villages.length]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
@@ -180,11 +188,16 @@ function NewListing({ uid, onDone }: { uid: string; onDone: () => void }) {
     const { error } = await supabase().from("listings").insert({
       slug: makeSlug(f.name), kind: f.kind, owner_id: uid, name: f.name.trim(), status: "pending", plan: "start",
       whatsapp: f.whatsapp.trim() || null, phone: f.phone.trim() || null,
-      data: { village: f.village.trim() || undefined, description: f.description.trim() || undefined },
+      data: {
+        type: f.kind === "stay" ? f.type : undefined,
+        village: f.village || undefined,
+        priceFrom: parseInt(f.priceFrom.replace(/\D/g, ""), 10) || undefined,
+        description: f.description.trim() || undefined,
+      },
     });
     setBusy(false);
     if (error) setMsg(error.message);
-    else { setMsg(t("createdPending")); setShow(false); setF({ name: "", kind: "stay", village: "", whatsapp: "", phone: "", description: "" }); onDone(); }
+    else { setMsg(t("createdPending")); setShow(false); setF({ name: "", kind: "stay", type: "guest", village: "", whatsapp: "", phone: "", priceFrom: "", description: "" }); onDone(); }
   }
 
   return (
@@ -202,11 +215,26 @@ function NewListing({ uid, onDone }: { uid: string; onDone: () => void }) {
                 <option value="driver">{t("kindDriver")}</option>
               </select>
             </label>
-            <label>{t("fVillage")}<input value={f.village} onChange={set("village")} placeholder="Чолпон-Ата" /></label>
+            {f.kind === "stay" && (
+              <label>{t("fType")}
+                <select value={f.type} onChange={set("type")}>
+                  {STAY_TYPE_KEYS.map((k) => <option key={k} value={k}>{tt(k)}</option>)}
+                </select>
+              </label>
+            )}
+            <label>{t("fVillage")}
+              <select required value={f.village} onChange={set("village")}>
+                <option value="">—</option>
+                {[...villages].sort((a, b) => (a.name[locale] ?? a.name.ru).localeCompare(b.name[locale] ?? b.name.ru)).map((v) => (
+                  <option key={v.slug} value={v.slug}>{v.name[locale] ?? v.name.ru}</option>
+                ))}
+              </select>
+            </label>
           </div>
           <div className="acc-row">
             <label>WhatsApp<input required value={f.whatsapp} onChange={set("whatsapp")} placeholder="+996 555 123 456" /></label>
             <label>{t("fPhone")}<input value={f.phone} onChange={set("phone")} /></label>
+            {f.kind === "stay" && <label>{t("fPrice")}<input inputMode="numeric" value={f.priceFrom} onChange={set("priceFrom")} placeholder="2000" /></label>}
           </div>
           <label>{t("fDescription")}<textarea rows={4} value={f.description} onChange={set("description")} /></label>
           <div className="acc-actions">

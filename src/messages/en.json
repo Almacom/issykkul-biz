@@ -113,7 +113,15 @@
     "close": "Close",
     "prev": "Previous photo",
     "next": "Next photo",
-    "photosTitle": "Photos"
+    "photosTitle": "Photos",
+    "viaAgency": "Message us — we'll pass your request to the host and help you get in touch.",
+    "ratingBased": "{n, plural, one {Guest rating based on # review} other {Guest rating based on # reviews}}",
+    "ratingWord": {
+      "excellent": "Excellent!",
+      "veryGood": "Very good",
+      "good": "Good",
+      "ok": "Fair"
+    }
   },
   "transfers": {
     "title": "Transfers around Issyk-Kul",
@@ -357,7 +365,8 @@
       "pending": "under review",
       "approved": "approved",
       "rejected": "rejected"
-    }
+    },
+    "fType": "Type of accommodation"
   },
   "currency": {
     "label": "Currency",

@@ -48,7 +48,7 @@ export default async function Home({ params }: { params: Promise<{ locale: Local
   const top = (premium.length >= 4 ? premium : sorted).slice(0, 8);
   // Recently added: newest old-site ids first (DB created_at once owners add listings), not repeating the popular block.
   const topSlugs = new Set(top.map((s) => s.slug));
-  const newest = [...stays].filter((s) => !topSlugs.has(s.slug)).sort((a, b) => (b.oldId ?? 0) - (a.oldId ?? 0)).slice(0, 8);
+  const newest = [...stays].filter((s) => !topSlugs.has(s.slug)).sort((a, b) => (b.addedAt ?? "").localeCompare(a.addedAt ?? "") || (b.oldId ?? 0) - (a.oldId ?? 0)).slice(0, 8);
   // Categories: count per type, photo = cover of the most reviewed listing of that type, link = category landing.
   const categories = STAY_TYPES.map((type) => {
     const list = stays.filter((s) => s.type === type);

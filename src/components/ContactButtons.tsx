@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase-config";
+import { effectivePlan, visibleContacts, type DbListing } from "@/lib/listings";
 
 type Props = {
   kind: "stay" | "driver";
@@ -10,6 +12,8 @@ type Props = {
   telegram?: string;
   labels: { whatsapp: string; telegram: string; showPhone: string };
   small?: boolean;
+  /** Listing slug: contacts are refreshed from the database, so an owner's new number shows without a rebuild. */
+  live?: string;
 };
 
 /** Sends a click event so hosts can see how many contacts the site brought them. */
@@ -19,8 +23,24 @@ function track(kind: string, id: number | string, channel: string) {
   } catch {}
 }
 
-export function ContactButtons({ kind, id, phone, whatsapp, telegram, labels, small, waText }: Props) {
+export function ContactButtons({ kind, id, labels, small, waText, live, ...initial }: Props) {
   const [shown, setShown] = useState(false);
+  const [c, setC] = useState({ phone: initial.phone, whatsapp: initial.whatsapp, telegram: initial.telegram });
+  useEffect(() => {
+    if (!live) return;
+    fetch(`${SUPABASE_URL}/rest/v1/listings?slug=eq.${encodeURIComponent(live)}&select=plan,plan_until,whatsapp,telegram,phone`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((rows: DbListing[]) => {
+        const r = rows[0];
+        if (!r) return;
+        const v = visibleContacts(effectivePlan(r), r);
+        setC({ phone: v.phone, whatsapp: v.whatsapp, telegram: v.telegram });
+      })
+      .catch(() => {});
+  }, [live]);
+  const { phone, whatsapp, telegram } = c;
   const cls = small ? " sm" : "";
   const wa = whatsapp.replace(/[^\d]/g, "");
   return (

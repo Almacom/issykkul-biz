@@ -7,6 +7,7 @@
  * - During `next build` / `next dev`: read from disk.
  */
 import type { Locale } from "@/i18n/routing";
+import { effectivePlan, getDbListings, textToHtml, visibleContacts, type DbListing } from "./listings";
 
 const memo = new Map<string, Promise<unknown>>();
 
@@ -62,6 +63,8 @@ export interface StaySummary {
   photoCount: number;
   /** Object id on the old site — grows with the date the listing was added. */
   oldId?: number;
+  /** When the listing was added in the dashboard (listings created on the new site). */
+  addedAt?: string;
 }
 
 export interface Room {
@@ -85,6 +88,10 @@ export interface Stay extends StaySummary {
   albums?: { title: string; photos: string[] }[];
   cover?: string | null;
   whatsapp: string;
+  telegram?: string;
+  phone?: string;
+  /** false on the Start plan: the agency's contacts are shown instead of the host's. */
+  directContacts?: boolean;
 }
 
 export interface Review {
@@ -104,8 +111,65 @@ export interface Article extends ArticleSummary {
 /* ---------- accessors ---------- */
 
 export const getVillages = async () => (await readContent<Village[]>("/content/villages.json")) ?? [];
-export const getStayIndex = async () => (await readContent<StaySummary[]>("/content/stays/index.json")) ?? [];
-export const getStayBySlug = (slug: string) => readContent<Stay>(`/content/stays/${slug}.json`);
+/* Migrated JSON + Supabase: owner edits and plans override the JSON; listings added on the new site are appended. */
+
+function applyDb<T extends StaySummary>(s: T, r: DbListing | undefined): T {
+  if (!r) return s;
+  return {
+    ...s,
+    name: r.name || s.name,
+    plan: effectivePlan(r),
+    priceFrom: r.data?.priceFrom ?? s.priceFrom,
+  };
+}
+
+function summaryFromDb(r: DbListing): StaySummary {
+  return {
+    slug: r.slug,
+    type: ((r.data?.type as StayType) ?? "guest"),
+    village: r.data?.village ?? null,
+    name: r.name,
+    priceFrom: r.data?.priceFrom ?? null,
+    rating: null,
+    reviewCount: 0,
+    plan: effectivePlan(r),
+    photo: null,
+    photoCount: 0,
+    addedAt: r.created_at,
+  };
+}
+
+export const getStayIndex = async (): Promise<StaySummary[]> => {
+  const [base, db] = await Promise.all([readContent<StaySummary[]>("/content/stays/index.json"), getDbListings()]);
+  const list = (base ?? []).map((s) => applyDb(s, db.get(s.slug)));
+  const known = new Set(list.map((s) => s.slug));
+  for (const r of db.values()) if (r.kind === "stay" && !known.has(r.slug)) list.push(summaryFromDb(r));
+  return list;
+};
+
+export const getStayBySlug = async (slug: string): Promise<Stay | null> => {
+  const [base, db] = await Promise.all([readContent<Stay>(`/content/stays/${slug}.json`), getDbListings()]);
+  const r = db.get(slug);
+  if (!base && !(r && r.kind === "stay")) return null;
+  const stay: Stay = base
+    ? applyDb(base, r)
+    : {
+        ...summaryFromDb(r!),
+        oldId: 0,
+        h1: r!.name,
+        seoTitle: `${r!.name} — Иссык-Куль`,
+        seoDescription: (r!.data?.description ?? "").slice(0, 160),
+        descriptionHtml: "",
+        foodHtml: "",
+        priceNote: "",
+        rooms: [],
+        photos: [],
+        whatsapp: "",
+      };
+  if (r?.data?.description) stay.descriptionHtml = textToHtml(r.data.description);
+  const c = visibleContacts(stay.plan, r ?? { whatsapp: base?.whatsapp });
+  return { ...stay, whatsapp: c.whatsapp, telegram: c.telegram, phone: c.phone, directContacts: c.direct };
+};
 export const getReviews = async (slug: string) => (await readContent<Review[]>(`/content/reviews/${slug}.json`)) ?? [];
 export const getArticleIndex = async () => (await readContent<ArticleSummary[]>("/content/articles/index.json")) ?? [];
 export const getArticle = (path: string) =>

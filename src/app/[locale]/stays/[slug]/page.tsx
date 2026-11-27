@@ -16,6 +16,9 @@ import { Reviews } from "@/components/Reviews";
 type P = { params: Promise<{ locale: Locale; slug: string }> };
 export const dynamicParams = false;
 
+/** Rating → word, like booking sites: 4.5+ excellent, 4+ very good, 3.5+ good. */
+const ratingWord = (r: number) => (r >= 4.5 ? "excellent" : r >= 4 ? "veryGood" : r >= 3.5 ? "good" : "ok");
+
 export async function generateStaticParams() {
   const stays = await getStayIndex();
   return routing.locales.flatMap((locale) => stays.map((s) => ({ locale, slug: s.slug })));
@@ -92,12 +95,22 @@ export default async function StayPage({ params }: P) {
         </GalleryViewer>
         <div className="listing">
           <div style={{ display: "grid", gap: 26, minWidth: 0 }}>
-            <div>
-              <div className="meta" style={{ color: "var(--muted)", fontWeight: 700, fontSize: 14 }}>
-                {t(`types.${stay.type}`)} · {vName}{v ? ` · ${t(`shore.${v.shore}`)}` : ""}
-                {stay.reviewCount > 0 && stay.rating ? ` · ★ ${stay.rating.toFixed(2)} (${t("stay.reviewsN", { n: stay.reviewCount })})` : ""}
+            <div className="stay-head">
+              <div>
+                <div className="meta" style={{ color: "var(--muted)", fontWeight: 700, fontSize: 14 }}>
+                  {t(`types.${stay.type}`)} · {vName}{v ? ` · ${t(`shore.${v.shore}`)}` : ""}
+                </div>
+                <h1 style={{ marginTop: 6 }}>{locale === "ru" ? stay.h1 : stay.name}</h1>
               </div>
-              <h1 style={{ marginTop: 6 }}>{locale === "ru" ? stay.h1 : stay.name}</h1>
+              {stay.reviewCount > 0 && stay.rating ? (
+                <a className="rating-box" href="#reviews">
+                  <span className="rb-label">{t("stay.ratingBased", { n: stay.reviewCount })}</span>
+                  <span className="rb-main">
+                    <b>{t(`stay.ratingWord.${ratingWord(stay.rating)}`)} {stay.rating.toFixed(1).replace(".", locale === "en" ? "." : ",")}/5</b>
+                    <span className="stars" style={{ ["--fill" as string]: `${(stay.rating / 5) * 100}%` }} aria-hidden="true">★★★★★</span>
+                  </span>
+                </a>
+              ) : null}
             </div>
             {locale !== "ru" && <div className="notice">{t("guide.ruOnly")}</div>}
             <div className="prose" dangerouslySetInnerHTML={{ __html: withImageBase(stay.descriptionHtml) }} />
@@ -135,7 +148,7 @@ export default async function StayPage({ params }: P) {
             </div>
             {reviews.length > 0 && (
               <div>
-                <h2 style={{ fontSize: 22, marginBottom: 10 }}>{t("stay.reviews")} ({stay.reviewCount})</h2>
+                <h2 id="reviews" style={{ fontSize: 22, marginBottom: 10, scrollMarginTop: 90 }}>{t("stay.reviews")} ({stay.reviewCount})</h2>
                 <Reviews reviews={reviews} />
               </div>
             )}
@@ -146,10 +159,10 @@ export default async function StayPage({ params }: P) {
                 ? <><span className="big">{<FromPrice text={t("stay.from", { price: "@@P@@" })} som={stay.priceFrom!} />}</span> <span className="note">{t("stay.perNight")}</span></>
                 : <span className="big" style={{ fontSize: 20 }}>{t("stay.priceOnRequest")}</span>}
             </div>
-            <ContactButtons kind="stay" id={slug} phone={stay.whatsapp} whatsapp={stay.whatsapp}
+            <ContactButtons kind="stay" id={slug} live={slug} phone={stay.phone ?? stay.whatsapp} whatsapp={stay.whatsapp} telegram={stay.telegram}
               waText={t("stay.waText", { name: stay.name })}
               labels={{ whatsapp: t("stay.askWa"), telegram: t("stay.telegram"), showPhone: t("stay.showPhone") }} />
-            <p className="note" style={{ margin: 0 }}>{t("stay.direct")}</p>
+            <p className="note" style={{ margin: 0 }}>{stay.directContacts === false ? t("stay.viaAgency") : t("stay.direct")}</p>
           </aside>
         </div>
       </div>

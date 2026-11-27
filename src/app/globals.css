@@ -332,3 +332,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .rv-stay small{color:var(--muted);font-size:13px}
 .rv-stay:hover b{color:var(--lake)}
 .reviews .rv-item + .rv-item{margin-top:14px}
+
+/* stay page: title + guest rating with stars */
+.stay-head{display:grid;gap:14px}
+.rating-box{display:grid;justify-items:start;gap:2px;text-decoration:none;color:var(--ink);flex:none}
+.rating-box .rb-label{font-size:14px;color:var(--muted)}
+.rating-box .rb-main{display:flex;align-items:center;gap:10px}
+.rating-box b{font-size:20px}
+.stars{--fill:100%;position:relative;display:inline-block;font-size:26px;line-height:1;letter-spacing:2px;color:#E2E6EA}
+.stars::before{content:"★★★★★";position:absolute;inset:0;width:var(--fill);overflow:hidden;color:#F59E0B;white-space:nowrap}
+@media (max-width:700px){.stars{font-size:22px}}
