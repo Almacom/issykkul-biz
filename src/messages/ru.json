@@ -121,7 +121,12 @@
       "veryGood": "Очень хорошо",
       "good": "Хорошо",
       "ok": "Неплохо"
-    }
+    },
+    "featuresTitle": "Удобства и услуги",
+    "freeTitle": "Бесплатно",
+    "paidTitle": "Платные услуги",
+    "locationTitle": "Расстояния",
+    "roomStockTitle": "Номерной фонд"
   },
   "transfers": {
     "title": "Трансферы по Иссык-Кулю",

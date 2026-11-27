@@ -250,6 +250,49 @@ def strip_review_widgets(h):
         return ""
     return h
 
+# "Additional info" module of an object page: location distances, room counts, free and paid services.
+INFO_KEYS = {"Расположение": "location", "Номера": "rooms", "Бесплатные услуги": "free", "Платные услуги": "paid"}
+
+def _cell(x):
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", x or ""))).strip()
+
+NAME_FIX = {"постельные белье": "Постельное бельё", "посуды": "Посуда", "питания": "Питание", "интернет wi fi": "Wi-Fi",
+            "теннис настольный": "Настольный теннис", "место для приготовление пищи": "Место для приготовления пищи",
+            "площадки для баскетбола": "Баскетбольная площадка"}
+
+def fix_name(x):
+    x = x.strip().rstrip(".").strip()
+    return NAME_FIX.get(x.lower(), x[:1].upper() + x[1:])
+
+def object_info(raw):
+    i = raw.find("ObjectAdditionalInfo")
+    if i < 0:
+        return None
+    seg = raw[i:raw.find("<!-- End_Module", i)]
+    parts = re.split(r'<h2 class="SubHead_blue accordion">(.*?)</h2>', seg, flags=re.S)
+    info = {}
+    for title, body in zip(parts[1::2], parts[2::2]):
+        title = _cell(title)
+        rows = [(_cell(a), _cell(b)) for a, b in re.findall(r'<div class="rowcelllt">(.*?)</div>\s*(?:<div class="rowcellrt">(.*?)</div>)?', body, re.S)]
+        rows = [(a, b) for a, b in rows if a]
+        note = " ".join(_cell(x) for x in re.findall(r"<p>(.*?)</p>", body, re.S)).strip()
+        key = INFO_KEYS.get(title)
+        if key == "free":
+            info["free"] = list(dict.fromkeys(fix_name(x) for x in [a for a, _ in rows] + [_cell(x) for x in re.findall(r'<div class="rowcellfull">(.*?)</div>', body, re.S)] if x))
+        elif key == "paid":
+            out = []
+            for a, b in rows:
+                m = re.match(r"^\s*([\d\s]+)\s*[cс]ом", b.replace("\xa0", " "))
+                out.append({"name": fix_name(a), "price": int(re.sub(r"\D", "", m.group(1))) if m else None, "text": "" if m else b})
+            info["paid"] = out
+        elif key in ("location", "rooms"):
+            info[key] = [{"name": a, "value": b} for a, b in rows]
+            if note:
+                info[key + "Note"] = note
+        elif rows or note:
+            info.setdefault("other", []).append({"title": title, "items": [{"name": a, "value": b} for a, b in rows], "note": note})
+    return info or None
+
 # village pages whose names the regexes miss
 SELA_VILLAGE = {"ornok": "ornok", "korumdu": "korumdu", "balykchy": "balykchy"}
 
@@ -299,6 +342,7 @@ for p in pages:
         "rooms": rooms,
         "photos": photos,
         "albums": albums,
+        "info": object_info(raw),
         "cover": cover,
         "priceFrom": min(prices) if prices else None,
         "rating": p["rating"],

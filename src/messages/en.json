@@ -121,7 +121,12 @@
       "veryGood": "Very good",
       "good": "Good",
       "ok": "Fair"
-    }
+    },
+    "featuresTitle": "Features and services",
+    "freeTitle": "Free",
+    "paidTitle": "Paid services",
+    "locationTitle": "Distances",
+    "roomStockTitle": "Rooms"
   },
   "transfers": {
     "title": "Transfers around Issyk-Kul",

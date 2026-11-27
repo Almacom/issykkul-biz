@@ -6,6 +6,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { getReviews, getStayBySlug, getStayIndex, getVillages, img, villageName, withImageBase } from "@/lib/content";
 import { LANDINGS } from "@/lib/landings";
 import { FromPrice, Money } from "@/components/Currency";
+import { StayFeatures } from "@/components/StayFeatures";
 import { GalleryViewer, type PhotoGroup } from "@/components/GalleryViewer";
 import { SITE_URL } from "@/lib/site";
 import { Photo } from "@/components/Photo";
@@ -114,6 +115,7 @@ export default async function StayPage({ params }: P) {
             </div>
             {locale !== "ru" && <div className="notice">{t("guide.ruOnly")}</div>}
             <div className="prose" dangerouslySetInnerHTML={{ __html: withImageBase(stay.descriptionHtml) }} />
+            {stay.info && <StayFeatures info={stay.info} />}
             {stay.rooms.length > 0 && (
               <div>
                 <h2 style={{ fontSize: 22, marginBottom: 10 }}>{t("stay.rooms")}</h2>

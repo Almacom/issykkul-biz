@@ -87,6 +87,8 @@ export interface Stay extends StaySummary {
   /** Object albums from the old site (grounds, beach, cafe…), shown before room photos. */
   albums?: { title: string; photos: string[] }[];
   cover?: string | null;
+  /** Old site's additional info: distances, room stock, free and paid services. */
+  info?: import("@/components/StayFeatures").StayInfo | null;
   whatsapp: string;
   telegram?: string;
   phone?: string;

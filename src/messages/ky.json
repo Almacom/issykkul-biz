@@ -121,7 +121,12 @@
       "veryGood": "Абдан жакшы",
       "good": "Жакшы",
       "ok": "Жаман эмес"
-    }
+    },
+    "featuresTitle": "Ыңгайлуулуктар жана кызматтар",
+    "freeTitle": "Акысыз",
+    "paidTitle": "Акылуу кызматтар",
+    "locationTitle": "Аралыктар",
+    "roomStockTitle": "Бөлмөлөр"
   },
   "transfers": {
     "title": "Ысык-Көл боюнча трансферлер",
