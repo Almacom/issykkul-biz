@@ -90,7 +90,12 @@
     "waText": "Hello! I'm interested in {name} (from issykkul.biz)",
     "perPeriod": "{per}",
     "photosN": "{n} photos",
-    "moreAbout": "More"
+    "moreAbout": "More",
+    "allPhotos": "All photos ({n})",
+    "close": "Close",
+    "prev": "Previous photo",
+    "next": "Next photo",
+    "photosTitle": "Photos"
   },
   "transfers": {
     "title": "Transfers around Issyk-Kul",

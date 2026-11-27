@@ -177,6 +177,31 @@ def pick_cover(slug, gallery, pool):
             return g, [g] + [x for x in gallery if x != g]
     return photo(thumb), gallery
 
+# Object photo albums on the old page (module IssykkulPhotoAlbumI): "Территория", "Двор", "Пляж", "Кафе", ...
+# They show the building and grounds, so they go first in the gallery; room photos follow.
+ALBUM_RANK = [r"террит|двор|общ|вид|здани|корпус", r"^фото(графии)?$|^фото\s|^фотографии", r"пляж|бассейн", r"разн", r"кафе|столов|ресторан|сауна|баня|медицин|этаж"]
+ALBUM_LAST = r"рядом|гост|чок-тал"
+
+def object_albums(raw):
+    out = []
+    for m in re.finditer(r'DnnModule-IssykkulPhotoAlbumI DnnModule-(\d+)"', raw):
+        seg = raw[m.end():]
+        nxt = seg.find('<div class="DnnModule ')
+        seg = seg[:nxt if nxt > 0 else None]
+        t = re.search(r'<h2 class="headtitle">(.*?)</h2>', seg, re.S)
+        hrefs = list(dict.fromkeys(re.findall(r'data-fancybox="group\d+"[^>]*?href=[\'"]([^\'"]+)[\'"]', seg)))
+        if hrefs:
+            out.append({"title": html.unescape(re.sub(r"<[^>]+>", "", t.group(1)).strip()) if t else "", "photos": [photo(h) for h in hrefs]})
+    def rank(a):
+        tl = a["title"].lower()
+        if re.search(ALBUM_LAST, tl):
+            return 99
+        for i, rx in enumerate(ALBUM_RANK):
+            if re.search(rx, tl):
+                return i
+        return 50
+    return sorted(out, key=rank)
+
 stays = []
 stay_files = {}
 for p in pages:
@@ -200,7 +225,9 @@ for p in pages:
             "prices": [{"period": x["period"].rstrip(".").strip(), "price": x["price"], "per": x["per"]} for x in r["periods"]],
         })
     prices = [x["price"] for r in rooms for x in r["prices"] if x["price"] > 0]
-    photos = [photo(x) for x in p["photos"]]
+    albums = object_albums(raw)
+    room_photos = [photo(x) for x in p["photos"]]
+    photos = list(dict.fromkeys([x for a in albums for x in a["photos"]] + room_photos))
     all_photos = list(dict.fromkeys(photos + [x for r in rooms for x in r["photos"]]))
     cover, photos_sorted = pick_cover(slug, photos if photos else all_photos, all_photos)
     if photos:
@@ -220,6 +247,7 @@ for p in pages:
         "priceNote": p["priceNote"],
         "rooms": rooms,
         "photos": photos,
+        "albums": albums,
         "cover": cover,
         "priceFrom": min(prices) if prices else None,
         "rating": p["rating"],

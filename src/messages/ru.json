@@ -90,7 +90,12 @@
     "waText": "Здравствуйте! Интересует {name} (с сайта issykkul.biz)",
     "perPeriod": "{per}",
     "photosN": "{n} фото",
-    "moreAbout": "Подробнее"
+    "moreAbout": "Подробнее",
+    "allPhotos": "Все фото ({n})",
+    "close": "Закрыть",
+    "prev": "Предыдущее фото",
+    "next": "Следующее фото",
+    "photosTitle": "Фото"
   },
   "transfers": {
     "title": "Трансферы по Иссык-Кулю",

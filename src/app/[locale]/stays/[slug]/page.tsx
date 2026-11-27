@@ -6,6 +6,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { getReviews, getStayBySlug, getStayIndex, getVillages, img, villageName, withImageBase } from "@/lib/content";
 import { LANDINGS } from "@/lib/landings";
 import { FromPrice, Money } from "@/components/Currency";
+import { GalleryViewer, type PhotoGroup } from "@/components/GalleryViewer";
 import { SITE_URL } from "@/lib/site";
 import { Photo } from "@/components/Photo";
 import { LakeMap } from "@/components/LakeMap";
@@ -48,6 +49,10 @@ export default async function StayPage({ params }: P) {
   const v = villages.find((x) => x.slug === stay.village);
   const landing = TYPE_LANDING[stay.type];
   const gallery = stay.photos.slice(0, 5);
+  const groups: PhotoGroup[] = [
+    ...(stay.albums ?? []).map((a) => ({ title: a.title, urls: a.photos.map((p) => img(p)!) })),
+    ...stay.rooms.filter((r) => r.photos.length).map((r) => ({ title: r.name, urls: r.photos.map((p) => img(p)!) })),
+  ];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -76,12 +81,15 @@ export default async function StayPage({ params }: P) {
           {landing && <> / <Link href={`/${landing}`}>{t(`types.${stay.type}`)}</Link></>}
           {v && <> / <Link href={{ pathname: "/stays", query: { village: v.slug } }}>{vName}</Link></>}
         </div>
-        <div className="gallery">
-          {(gallery.length ? gallery : [null, null, null, null, null]).map((p, i) => (
-            <div key={i}><Photo src={p} alt={`${stay.name} — ${i + 1}`} seed={i + stay.name.length} eager={i === 0} /></div>
-          ))}
-        </div>
-        {stay.photos.length > 5 && <p className="note">{t("stay.photosN", { n: stay.photos.length })}</p>}
+        <GalleryViewer groups={groups} name={stay.name}>
+          <div className="gallery">
+            {(gallery.length ? gallery : [null, null, null, null, null]).map((p, i) => (
+              <div key={i} data-i={p ? groups.flatMap((g) => g.urls).indexOf(img(p)!) : undefined}>
+                <Photo src={p} alt={`${stay.name} — ${i + 1}`} seed={i + stay.name.length} eager={i === 0} />
+              </div>
+            ))}
+          </div>
+        </GalleryViewer>
         <div className="listing">
           <div style={{ display: "grid", gap: 26, minWidth: 0 }}>
             <div>

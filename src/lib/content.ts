@@ -79,6 +79,9 @@ export interface Stay extends StaySummary {
   priceNote: string;
   rooms: Room[];
   photos: string[];
+  /** Object albums from the old site (grounds, beach, cafe…), shown before room photos. */
+  albums?: { title: string; photos: string[] }[];
+  cover?: string | null;
   whatsapp: string;
 }
 

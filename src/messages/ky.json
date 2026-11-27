@@ -90,7 +90,12 @@
     "waText": "Саламатсызбы! {name} кызыктырат (issykkul.biz сайтынан)",
     "perPeriod": "{per}",
     "photosN": "{n} сүрөт",
-    "moreAbout": "Кененирээк"
+    "moreAbout": "Кененирээк",
+    "allPhotos": "Бардык сүрөттөр ({n})",
+    "close": "Жабуу",
+    "prev": "Мурунку сүрөт",
+    "next": "Кийинки сүрөт",
+    "photosTitle": "Сүрөттөр"
   },
   "transfers": {
     "title": "Ысык-Көл боюнча трансферлер",
