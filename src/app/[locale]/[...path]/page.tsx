@@ -174,14 +174,15 @@ export default async function TextPage({ params }: P) {
 
         {article && !villageSlug && (
           <div style={{ display: "grid", gap: 30 }}>
-            {article.html && <ArticleBody html={article.html} />}
-            {article.albums?.length ? <ArticleAlbums albums={article.albums} name={article.h1} /> : null}
+            {/* category landings: listings first, the SEO text at the end */}
             {isLanding && (
               <div>
                 <p className="note">{t("stays.found", { count: landingList.length })}</p>
                 <div className="grid">{landingList.map((s) => <StayCard key={s.slug} stay={s} villages={villages} />)}</div>
               </div>
             )}
+            {article.html && <ArticleBody html={article.html} />}
+            {article.albums?.length ? <ArticleAlbums albums={article.albums} name={article.h1} /> : null}
             {isSectionIndex && (
               <ul className="alist">
                 {childrenOf(sectionKey, idx, p).map((a) => <li key={a.path}><Link href={a.path}>{a.h1}</Link></li>)}
