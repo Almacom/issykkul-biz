@@ -9,7 +9,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import {
-  byPromotion, getArticle, getArticleIndex, getReviews, getStayIndex, getVillages, villageName, type ArticleSummary, type Review, type StaySummary,
+  byPromotion, getArticle, getArticleIndex, getReviews, getStayIndex, getVillages, villageName, type Article, type ArticleSummary, type Review, type StaySummary,
 } from "@/lib/content";
 import { LANDINGS, landingStays } from "@/lib/landings";
 import { ArticleBody } from "@/components/ArticleBody";
@@ -28,6 +28,7 @@ export async function generateStaticParams() {
   const idx = await getArticleIndex();
   const paths = new Set(idx.map((a) => a.path));
   paths.add("/guide");
+  for (const sec of SECTIONS) paths.add(`/${sec}`); // section pages exist even without their own text (e.g. /blog)
   return [...paths].map((p) => ({ locale: "ru", path: p.replace(/^\//, "").split("/") }));
 }
 
@@ -38,6 +39,7 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   const a = await getArticle(p);
   const ru = locale === "ru";
   if (!a && p === "/guide") return { title: t("title"), description: t("lead") };
+  if (!a && SECTIONS.includes(p.slice(1))) return { title: t(`sections.${p.slice(1)}`), alternates: { canonical: p }, robots: ru ? undefined : { index: false, follow: true } };
   if (!a) return {};
   return {
     title: { absolute: ru ? a.seoTitle : a.h1 },
@@ -49,6 +51,15 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
 
 function childrenOf(section: string, idx: ArticleSummary[], self: string) {
   return idx.filter((a) => a.path !== self && (a.section === section || (section === "guide" && a.path.split("/").length === 3 && a.path.startsWith("/guide/"))));
+}
+
+/**
+ * Section pages on the old site had their own list of teasers (small image, link, excerpt) inside the text.
+ * The new page shows cards instead, so only the introduction before that list is kept.
+ */
+function sectionIntro(html: string): string {
+  const cut = html.search(/<img|<ul|<ol|<table/i);
+  return cut > 0 ? html.slice(0, cut) : html;
 }
 
 async function latestReviews(limit: number) {
@@ -63,7 +74,11 @@ export default async function TextPage({ params }: P) {
   setRequestLocale(locale);
   const p = "/" + path.map(decodeURIComponent).join("/");
   const t = await getTranslations();
-  const [article, idx, villages] = await Promise.all([getArticle(p), getArticleIndex(), getVillages()]);
+  const [found, idx, villages] = await Promise.all([getArticle(p), getArticleIndex(), getVillages()]);
+  // a section without its own text on the old site (e.g. /blog) still gets a page with the cards of its articles
+  const article: Article | null = found ?? (p !== "/guide" && SECTIONS.includes(p.slice(1))
+    ? { path: p, section: p.slice(1), h1: t(`guide.sections.${p.slice(1)}`), seoTitle: "", seoDescription: "", village: null, html: "", relatedStays: [] }
+    : null);
   const isGuideRoot = p === "/guide";
   if (!article && !isGuideRoot) notFound();
 
@@ -181,12 +196,20 @@ export default async function TextPage({ params }: P) {
                 <div className="grid">{landingList.map((s) => <StayCard key={s.slug} stay={s} villages={villages} />)}</div>
               </div>
             )}
-            {article.html && <ArticleBody html={article.html} />}
+            {article.html && <ArticleBody html={isSectionIndex ? sectionIntro(article.html) : article.html} />}
             {article.albums?.length ? <ArticleAlbums albums={article.albums} name={article.h1} /> : null}
             {isSectionIndex && (
-              <ul className="alist">
-                {childrenOf(sectionKey, idx, p).map((a) => <li key={a.path}><Link href={a.path}>{a.h1}</Link></li>)}
-              </ul>
+              <div className="acards">
+                {childrenOf(sectionKey, idx, p).map((a, i) => (
+                  <Link key={a.path} href={a.path} className="acard">
+                    <div className="ph"><Photo src={a.photo} alt={a.h1} seed={i + 7} /></div>
+                    <div className="body">
+                      <h3>{a.h1}</h3>
+                      {a.excerpt && <p>{a.excerpt}</p>}
+                    </div>
+                  </Link>
+                ))}
+              </div>
             )}
             {related.length > 0 && !isReviewsPage && (
               <div>

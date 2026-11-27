@@ -9,3 +9,5 @@ Project ref: `khsashrpjnbiywhshlan` (region eu-west-1).
 - Admins: emails in `public.admin_emails` (now info@issykkul.biz) get the admin role on first sign-in. info@ is also the contact for listings whose hosts have no email.
 - Pages: `/login`, `/cabinet` (owner: my listings, edit, claim an existing listing, add new), `/admin` (approve claims, publish new listings, record a paid subscription).
 - Owner edits (`listings`: contacts, `data.description`, `data.priceFrom`, `data.type`, `data.village`) are merged into the public pages at build time (`src/lib/listings.ts`); contacts also refresh live.
+
+- `reviews` (0006): reviews written on the new site; pending → published by the admin.

@@ -7,6 +7,7 @@ import { getReviews, getStayBySlug, getStayIndex, getVillages, img, villageName,
 import { LANDINGS } from "@/lib/landings";
 import { FromPrice, Money } from "@/components/Currency";
 import { StayFeatures } from "@/components/StayFeatures";
+import { ReviewForm } from "@/components/ReviewForm";
 import { GalleryViewer, type PhotoGroup } from "@/components/GalleryViewer";
 import { SITE_URL } from "@/lib/site";
 import { Photo } from "@/components/Photo";
@@ -103,6 +104,7 @@ export default async function StayPage({ params }: P) {
                 </div>
                 <h1 style={{ marginTop: 6 }}>{locale === "ru" ? stay.h1 : stay.name}</h1>
               </div>
+              <div className="head-side">
               {stay.reviewCount > 0 && stay.rating ? (
                 <a className="rating-box" href="#reviews">
                   <span className="rb-label">{t("stay.ratingBased", { n: stay.reviewCount })}</span>
@@ -112,6 +114,11 @@ export default async function StayPage({ params }: P) {
                   </span>
                 </a>
               ) : null}
+                <a className="write-review" href="#write-review">
+                  <span>{t("reviewForm.stayed")}</span>
+                  <b>✎ {t("reviewForm.open")}</b>
+                </a>
+              </div>
             </div>
             {locale !== "ru" && <div className="notice">{t("guide.ruOnly")}</div>}
             <div className="prose" dangerouslySetInnerHTML={{ __html: withImageBase(stay.descriptionHtml) }} />
@@ -152,12 +159,11 @@ export default async function StayPage({ params }: P) {
               <h2 style={{ fontSize: 22, marginBottom: 10 }}>{t("stay.location")}</h2>
               <div className="mapbox"><LakeMap stays={[]} villages={villages} locale={locale} highlight={stay.village} /></div>
             </div>
-            {reviews.length > 0 && (
-              <div>
-                <h2 id="reviews" style={{ fontSize: 22, marginBottom: 10, scrollMarginTop: 90 }}>{t("stay.reviews")} ({stay.reviewCount})</h2>
-                <Reviews reviews={reviews} />
-              </div>
-            )}
+            <div>
+              <h2 id="reviews" style={{ fontSize: 22, marginBottom: 10, scrollMarginTop: 90 }}>{t("stay.reviews")}{reviews.length ? ` (${stay.reviewCount})` : ""}</h2>
+              {reviews.length > 0 ? <Reviews reviews={reviews} /> : <p className="note">{t("reviewForm.first")}</p>}
+              <div style={{ marginTop: 16 }}><ReviewForm slug={slug} /></div>
+            </div>
           </div>
           <aside className="contact">
             <div>

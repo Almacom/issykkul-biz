@@ -378,7 +378,9 @@
     "fPaidName": "Name, e.g. “Sauna”",
     "fPaidPrice": "Price, som",
     "fPaidAdd": "+ Add service",
-    "remove": "Remove"
+    "remove": "Remove",
+    "tabReviews": "Reviews",
+    "reviewsHint": "Published reviews appear on the site after the next site update."
   },
   "currency": {
     "label": "Currency",
@@ -386,5 +388,35 @@
     "RUB": "₽ RUB",
     "USD": "$ USD",
     "KZT": "₸ KZT"
+  },
+  "reviewForm": {
+    "stayed": "Have you stayed here?",
+    "open": "Write a review",
+    "first": "No reviews yet — be the first.",
+    "title": "Your review",
+    "rating": "Rating",
+    "name": "Your name",
+    "from": "Where are you from",
+    "fromPh": "Almaty, Kazakhstan",
+    "with": "Travelled with",
+    "month": "When",
+    "monthPh": "July 2026",
+    "headline": "Title",
+    "text": "Review",
+    "textPh": "What you liked and what not: room, food, beach, hosts…",
+    "send": "Send review",
+    "moderation": "Your review appears after a check.",
+    "thanks": "Thank you! Your review has been sent and will appear after a check.",
+    "needRating": "Choose a rating from 1 to 5 stars.",
+    "tooShort": "Please write a couple of sentences (20+ characters).",
+    "failed": "Could not send. Please try again.",
+    "withOpt": {
+      "family": "Family",
+      "kids": "With children",
+      "couple": "Couple",
+      "friends": "Friends",
+      "alone": "Alone",
+      "colleagues": "Colleagues"
+    }
   }
 }

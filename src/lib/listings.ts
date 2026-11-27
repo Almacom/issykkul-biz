@@ -76,3 +76,31 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 /** Owner's plain-text description → simple HTML paragraphs. */
 export const textToHtml = (t: string) =>
   t.split(/\n{2,}/).map((p) => `<p>${esc(p.trim()).replace(/\n/g, "<br>")}</p>`).join("\n");
+
+export interface DbReview {
+  id: number; listing_slug: string; author: string; from_place: string | null; traveled_with: string | null;
+  stay_month: string | null; rating: number; title: string | null; text: string; created_at: string;
+}
+
+let reviewsCache: Promise<Map<string, DbReview[]>> | null = null;
+
+/** Reviews written on the new site and approved by the admin, grouped by listing. */
+export function getDbReviews(): Promise<Map<string, DbReview[]>> {
+  reviewsCache ??= (async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?select=*&status=eq.published&order=created_at.desc&limit=10000`, {
+        cache: "force-cache",
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "x-build": STAMP },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const m = new Map<string, DbReview[]>();
+      for (const r of (await res.json()) as DbReview[]) m.set(r.listing_slug, [...(m.get(r.listing_slug) ?? []), r]);
+      return m;
+    } catch (e) {
+      console.warn("[reviews] Supabase unavailable, using migrated reviews only:", e);
+      return new Map();
+    }
+  })();
+  return reviewsCache;
+}

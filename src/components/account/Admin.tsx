@@ -7,7 +7,12 @@ import { PLAN_PRICES, formatSom } from "@/lib/data";
 import { useAccount } from "./useAccount";
 import { ListingEditor } from "./ListingEditor";
 
-type Tab = "claims" | "pending" | "all";
+type Tab = "claims" | "pending" | "reviews" | "all";
+
+interface PendingReview {
+  id: number; listing_slug: string; author: string; from_place: string | null; traveled_with: string | null;
+  stay_month: string | null; rating: number; title: string | null; text: string; created_at: string;
+}
 
 export function Admin() {
   const t = useTranslations("account");
@@ -15,13 +20,16 @@ export function Admin() {
   const [tab, setTab] = useState<Tab>("claims");
   const [claims, setClaims] = useState<Claim[]>([]);
   const [pending, setPending] = useState<Listing[]>([]);
+  const [revs, setRevs] = useState<PendingReview[]>([]);
 
   const load = useCallback(async () => {
     const sb = supabase();
-    const [{ data: cs }, { data: ps }] = await Promise.all([
+    const [{ data: cs }, { data: ps }, { data: rs }] = await Promise.all([
       sb.from("claims").select("*, listings(name, slug), profiles(email, full_name, phone)").eq("status", "pending").order("created_at"),
       sb.from("listings").select("*").eq("status", "pending").order("created_at"),
+      sb.from("reviews").select("*").eq("status", "pending").order("created_at"),
     ]);
+    setRevs((rs as PendingReview[]) ?? []);
     setClaims((cs as Claim[]) ?? []);
     setPending((ps as Listing[]) ?? []);
   }, []);
@@ -45,6 +53,11 @@ export function Admin() {
     if (error) alert(error.message); else load();
   }
 
+  async function setReview(id: number, status: "published" | "rejected") {
+    const { error } = await supabase().from("reviews").update({ status }).eq("id", id);
+    if (error) alert(error.message); else load();
+  }
+
   async function setStatus(l: Listing, status: ListingStatus) {
     const { error } = await supabase().from("listings").update({ status }).eq("id", l.id);
     if (error) alert(error.message); else load();
@@ -59,6 +72,7 @@ export function Admin() {
       <div className="acc-tabs">
         <button className={tab === "claims" ? "on" : ""} onClick={() => setTab("claims")}>{t("tabClaims")} ({claims.length})</button>
         <button className={tab === "pending" ? "on" : ""} onClick={() => setTab("pending")}>{t("tabPending")} ({pending.length})</button>
+        <button className={tab === "reviews" ? "on" : ""} onClick={() => setTab("reviews")}>{t("tabReviews")} ({revs.length})</button>
         <button className={tab === "all" ? "on" : ""} onClick={() => setTab("all")}>{t("tabAll")}</button>
       </div>
 
@@ -94,6 +108,26 @@ export function Admin() {
               </div>
             </div>
           ))}
+        </section>
+      )}
+
+      {tab === "reviews" && (
+        <section className="acc-sec">
+          {revs.length === 0 && <p className="muted">{t("empty")}</p>}
+          {revs.map((r) => (
+            <div key={r.id} className="acc-card">
+              <h3><Link href={`/stays/${r.listing_slug}`} target="_blank">{r.listing_slug}</Link> · {"★".repeat(r.rating)}<span className="muted">{"★".repeat(5 - r.rating)}</span></h3>
+              <p><b>{r.author}</b>{[r.from_place, r.traveled_with, r.stay_month].filter(Boolean).map((x) => ` · ${x}`).join("")}</p>
+              {r.title && <p><b>{r.title}</b></p>}
+              <p className="acc-quote">{r.text}</p>
+              <p className="muted small">{new Date(r.created_at).toLocaleString("ru-RU")}</p>
+              <div className="acc-actions">
+                <button className="btn sm" onClick={() => setReview(r.id, "published")}>{t("publish")}</button>
+                <button className="btn sm ghost" onClick={() => setReview(r.id, "rejected")}>{t("reject")}</button>
+              </div>
+            </div>
+          ))}
+          {revs.length > 0 && <p className="muted small">{t("reviewsHint")}</p>}
         </section>
       )}
 

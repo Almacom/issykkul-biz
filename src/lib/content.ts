@@ -7,7 +7,7 @@
  * - During `next build` / `next dev`: read from disk.
  */
 import type { Locale } from "@/i18n/routing";
-import { effectivePlan, getDbListings, textToHtml, visibleContacts, type DbListing } from "./listings";
+import { effectivePlan, getDbListings, getDbReviews, textToHtml, visibleContacts, type DbListing, type DbReview } from "./listings";
 
 const memo = new Map<string, Promise<unknown>>();
 
@@ -102,6 +102,8 @@ export interface Review {
 
 export interface ArticleSummary {
   path: string; section: string; h1: string; seoTitle: string; seoDescription: string; village: string | null;
+  /** Card data for section pages. */
+  photo?: string | null; excerpt?: string;
 }
 export interface Article extends ArticleSummary {
   html: string;
@@ -114,6 +116,14 @@ export interface Article extends ArticleSummary {
 
 export const getVillages = async () => (await readContent<Village[]>("/content/villages.json")) ?? [];
 /* Migrated JSON + Supabase: owner edits and plans override the JSON; listings added on the new site are appended. */
+
+/** Adds reviews approved on the new site to the migrated count and average rating. */
+function withNewReviews<T extends StaySummary>(s: T, revs: DbReview[] | undefined): T {
+  if (!revs?.length) return s;
+  const oldSum = (s.rating ?? 0) * (s.reviewCount ?? 0);
+  const count = (s.reviewCount ?? 0) + revs.length;
+  return { ...s, reviewCount: count, rating: Math.round(((oldSum + revs.reduce((n, r) => n + r.rating, 0)) / count) * 100) / 100 };
+}
 
 function applyDb<T extends StaySummary>(s: T, r: DbListing | undefined): T {
   if (!r) return s;
@@ -142,11 +152,11 @@ function summaryFromDb(r: DbListing): StaySummary {
 }
 
 export const getStayIndex = async (): Promise<StaySummary[]> => {
-  const [base, db] = await Promise.all([readContent<StaySummary[]>("/content/stays/index.json"), getDbListings()]);
+  const [base, db, revs] = await Promise.all([readContent<StaySummary[]>("/content/stays/index.json"), getDbListings(), getDbReviews()]);
   const list = (base ?? []).map((s) => applyDb(s, db.get(s.slug)));
   const known = new Set(list.map((s) => s.slug));
   for (const r of db.values()) if (r.kind === "stay" && !known.has(r.slug)) list.push(summaryFromDb(r));
-  return list;
+  return list.map((s) => withNewReviews(s, revs.get(s.slug)));
 };
 
 export const getStayBySlug = async (slug: string): Promise<Stay | null> => {
@@ -177,9 +187,17 @@ export const getStayBySlug = async (slug: string): Promise<Stay | null> => {
     };
   }
   const c = visibleContacts(stay.plan, r ?? { whatsapp: base?.whatsapp });
-  return { ...stay, whatsapp: c.whatsapp, telegram: c.telegram, phone: c.phone, directContacts: c.direct };
+  const revs = (await getDbReviews()).get(slug);
+  return { ...withNewReviews(stay, revs), whatsapp: c.whatsapp, telegram: c.telegram, phone: c.phone, directContacts: c.direct };
 };
-export const getReviews = async (slug: string) => (await readContent<Review[]>(`/content/reviews/${slug}.json`)) ?? [];
+export const getReviews = async (slug: string): Promise<Review[]> => {
+  const [old, db] = await Promise.all([readContent<Review[]>(`/content/reviews/${slug}.json`), getDbReviews()]);
+  const fresh: Review[] = (db.get(slug) ?? []).map((r) => ({
+    id: 1_000_000_000 + r.id, author: r.author, from: r.from_place ?? "", rating: r.rating, date: r.created_at.slice(0, 10),
+    title: r.title ?? "", text: r.text, with: r.traveled_with ?? "",
+  }));
+  return [...fresh, ...(old ?? [])];
+};
 export const getArticleIndex = async () => (await readContent<ArticleSummary[]>("/content/articles/index.json")) ?? [];
 export const getArticle = (path: string) =>
   readContent<Article>(`/content/articles/${path.replace(/^\//, "").replace(/\//g, "__")}.json`);

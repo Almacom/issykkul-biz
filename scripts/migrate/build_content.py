@@ -246,6 +246,8 @@ def strip_review_widgets(h):
     # pager of the old review list: links "1 2 3 … › »" with hidden inputs
     h = re.sub(r'(?:<a[^>]*>\s*(?:\d+|&[lr]saquo;|&[lr]aquo;|[‹›«»])\s*</a>\s*(?:<input[^>]*>\s*)?){3,}', "", h)
     h = re.sub(r"<input[^>]*>", "", h)
+    # caption link under embedded Google maps
+    h = re.sub(r"<small>\s*<a[^>]*>\s*Просмотреть увеличенную карту\s*</a>\s*</small>|<a[^>]*>\s*Просмотреть увеличенную карту\s*</a>", "", h)
     if not re.sub(r"<[^>]+>|\s|&nbsp;", "", h):
         return ""
     return h
@@ -383,7 +385,7 @@ if os.path.exists(f"{CRAWL}/reviews.json"):
 
 # ---------- articles ----------
 BOILERPLATE = re.compile(r"Введите (ваш )?email|менеджер по отдыху|Бесплатная консультация|Поделиться:|pluso|revStars|Загружается\.\.\.|"
-                         r"Фильтр Сортировка|Поможем подобрать|Просмотреть увеличенную карту|Где остановиться\? Как добраться|"
+                         r"Фильтр Сортировка|Поможем подобрать|Где остановиться\? Как добраться|"
                          r"Другие экскурсии по Иссык", re.I)
 def section_of(path):
     parts = path.strip("/").split("/")
@@ -419,6 +421,8 @@ for p in pages:
                 text_parts.append(rewrite(t))
     if not text_parts and p.get("contentHtml"):
         text_parts = [rewrite(strip_attrs(p["contentHtml"]))]
+    if "КРИТИЧЕСКАЯ ОШИБКА" in "".join(text_parts):
+        continue  # page was broken on the old site; its URL redirects elsewhere (url-map)
     PRIMARY = {"/faq": "/chavo.aspx", "/otzyvy": "/otzyyvyy.aspx"}
     if new in PRIMARY and not p["url"].lower().endswith(PRIMARY[new]):
         continue  # several old pages merged into one new page: keep the main one
@@ -481,7 +485,15 @@ def afile(path):
 aindex = []
 for a in articles:
     dump(f"{OUT}/articles/{afile(a['path'])}.json", a)
-    aindex.append({k: a[k] for k in ("path", "section", "h1", "seoTitle", "seoDescription", "village")})
+    # card data for section pages: first album photo (or first image in the text) and a short excerpt
+    first_img = (a.get("albums") or [{}])[0].get("photos", [None])[0] if a.get("albums") else None
+    if not first_img:
+        m = re.search(r'<img[^>]*src="(/portals/[^"]+)"', a["html"], re.I)
+        first_img = m.group(1) if m else None
+    text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", a["html"]))).strip()
+    excerpt = (text[:180].rsplit(" ", 1)[0] + "…") if len(text) > 180 else text
+    aindex.append({k: a[k] for k in ("path", "section", "h1", "seoTitle", "seoDescription", "village")} |
+                  {"photo": first_img, "excerpt": excerpt or (a["seoDescription"] or "")[:180]})
 dump(f"{OUT}/articles/index.json", aindex)
 dump(f"{OUT}/villages.json", [{"slug": v[0], "name": {"ru": v[1], "en": v[2], "ky": v[3]}, "shore": v[5]} for v in VILLAGES])
 

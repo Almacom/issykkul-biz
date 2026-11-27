@@ -564,9 +564,9 @@
 "old": "https://www.issykkul.biz/otdyyh-na-issyyk-kule/informatsija.aspx",
 "status_old": "200",
 "title": "Достопримечательности  Иссык-куля",
-"new": "/guide/informatsija",
+"new": "/guide",
 "code": "301",
-"note": "Статья",
+"note": "Статья (old page broken: 'КРИТИЧЕСКАЯ ОШИБКА')",
 "objectId": "",
 "reviews": "",
 "photos": 0

@@ -374,3 +374,29 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .room .gv{align-self:start;height:fit-content}
 .room .gv .rph{cursor:zoom-in}
 .gv-count-badge{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700;background:rgba(17,20,23,.72);color:#fff;cursor:pointer}
+
+/* guide section pages: article cards */
+.acards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.acard{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s}
+.acard:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(17,20,23,.10)}
+.acard .ph{position:relative;aspect-ratio:3/2;background:var(--lake-soft)}
+.acard .ph svg{position:absolute;inset:0;width:100%;height:100%}
+.acard .body{padding:14px 16px 16px;display:grid;gap:6px}
+.acard h3{font-size:17px;margin:0;line-height:1.3}
+.acard p{margin:0;font-size:14px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.acard:hover h3{color:var(--lake)}
+
+/* stay head: rating + "Have you stayed here?" */
+.head-side{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:flex-end}
+.write-review{display:grid;gap:2px;text-decoration:none;color:var(--ink);padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.write-review span{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.write-review b{color:var(--lake);font-size:15px}
+.write-review:hover{border-color:var(--lake)}
+/* review form */
+.rf-form{padding:18px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.rf-label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.rf-stars{display:flex;gap:4px}
+.rf-stars button{border:0;background:none;padding:0;font-size:32px;line-height:1;color:#E2E6EA;cursor:pointer}
+.rf-stars button.on{color:#F59E0B}
+.rf-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.rf-done{font-weight:600}
