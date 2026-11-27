@@ -259,6 +259,17 @@ for p in pages:
     stay_files[slug] = stay
 
 # ---------- reviews ----------
+def plain_text(t):
+    """Review texts from the old site may contain HTML (<br />, <strong>, links): keep line breaks, drop tags."""
+    t = t or ""
+    t = re.sub(r"(?i)<br\s*/?>", "\n", t)
+    t = re.sub(r"(?i)</p\s*>|</div\s*>", "\n\n", t)
+    t = re.sub(r"<[^>]+>", "", t)
+    t = html.unescape(t).replace("\xa0", " ")
+    t = re.sub(r"[ \t]+", " ", t)
+    t = "\n".join(line.strip() for line in t.splitlines())
+    return re.sub(r"\n{3,}", "\n\n", t).strip()
+
 reviews_by_slug = {}
 if os.path.exists(f"{CRAWL}/reviews.json"):
     revs = json.load(open(f"{CRAWL}/reviews.json"))
@@ -271,7 +282,7 @@ if os.path.exists(f"{CRAWL}/reviews.json"):
         for r in items:
             text = full.get(str(r["id"]), r["text"])
             out.append({"id": r["id"], "author": r["author"], "from": r["from"], "rating": r["rating"], "date": r["date"],
-                        "title": r["title"], "text": text.strip(), "with": r["with"]})
+                        "title": plain_text(r["title"]), "text": plain_text(text), "with": r["with"]})
         out.sort(key=lambda r: r["date"], reverse=True)
         reviews_by_slug[new[len("/stays/"):]] = out
 
