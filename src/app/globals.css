@@ -1,16 +1,15 @@
 /* Design tokens + base styles. Layout: sticky header → scenic lake hero → content; one centered 1200px column. */
 :root{
-  --bg:#F6F8FA; --surface:#FFFFFF; --ink:#111417; --muted:#5F6670; --line:#E2E6EA;
+  --bg:#FFFFFF; --surface:#FFFFFF; --ink:#111417; --muted:#5F6670; --line:#E2E6EA;
   --lake:#1A7FC1; --lake-deep:#111417; --lake-soft:#E6F3FC; --sand:#111417; --snow:#FFFFFF;
   --on-lake:#FFFFFF; --on-sand:#FFFFFF;
   --ok:#1E8A4C; --warn:#B7791F;
   --f-display:"Unbounded", "Manrope", system-ui, sans-serif;
   --f-body:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --r:14px;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0C0E10; --surface:#15181B; --ink:#F1F3F5; --muted:#9AA2AB; --line:#272C31;
-  --lake:#4FB3EC; --lake-deep:#F1F3F5; --lake-soft:#13283A; --sand:#F1F3F5; --snow:#FFFFFF; --on-lake:#0C0E10; --on-sand:#0C0E10; --ok:#4CC47F; --warn:#E3A948; color-scheme:dark}}
+/* The site is always light (white background), whatever the device theme. Dark tokens kept for an optional switch. */
 :root[data-theme="dark"]{
   --bg:#0C0E10; --surface:#15181B; --ink:#F1F3F5; --muted:#9AA2AB; --line:#272C31;
   --lake:#4FB3EC; --lake-deep:#F1F3F5; --lake-soft:#13283A; --sand:#F1F3F5; --snow:#FFFFFF; --on-lake:#0C0E10; --on-sand:#0C0E10; --ok:#4CC47F; --warn:#E3A948; color-scheme:dark}

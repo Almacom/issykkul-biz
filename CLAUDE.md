@@ -10,7 +10,7 @@ Owner works with Claude Code; explain changes in Russian.
 - Payments at launch are manual (MBank / Elsom / O!Dengi QR) — admin activates the subscription.
 
 ## Stack
-- Next.js 15 App Router, TypeScript, plain CSS (`src/app/globals.css`, tokens on `:root`, light + dark).
+- Next.js 15 App Router, TypeScript, plain CSS (`src/app/globals.css`, tokens on `:root`). The site is always light / white background (owner's choice) — no automatic dark mode.
 - i18n: next-intl. Locales `ru` (default, no URL prefix), `en`, `ky` (shown as "KG"). Texts in `src/messages/*.json` — every UI string goes into all three files.
 - Content migrated from the old site: JSON in `public/content/` (stays, articles, reviews, villages), read via `src/lib/content.ts` (ASSETS binding on Cloudflare, disk during build). Regenerate with `scripts/migrate/build_content.py <crawl_dir> .` — never edit the JSON by hand. `src/lib/data.ts` now only holds plan prices and demo transfer drivers. DB: Supabase, migrations in `supabase/migrations/` (see `supabase/README.md`).
 - Text pages (guide, blog, stories, category landings, FAQ, terms) are served by one catch-all route `src/app/[locale]/[...path]/page.tsx`; category landing filters live in `src/lib/landings.ts`.
