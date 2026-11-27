@@ -68,7 +68,7 @@ export const PLAN_PRICES: Record<Plan, { month: number; year: number }> = {
   start: { month: 0, year: 0 },
   standard: { month: 600, year: 6000 },
   premium: { month: 1200, year: 12000 },
-  driver: { month: 400, year: 3500 },
+  driver: { month: 500, year: 5000 },
 };
 
 

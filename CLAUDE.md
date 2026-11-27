@@ -5,7 +5,7 @@ Owner works with Claude Code; explain changes in Russian.
 
 ## Business model
 - Tourists contact hosts and drivers **directly** (WhatsApp / Telegram / phone). No booking, no commission.
-- Revenue = subscriptions for hosts/drivers: Start (free), Standard 600/mo or 6 000/yr, Premium 1 200/mo or 12 000/yr, Driver 400/mo or 3 500/yr (som). Prices live in `PLAN_PRICES` in `src/lib/data.ts`.
+- Revenue = subscriptions for hosts/drivers: Start (free), Standard 600/mo or 6 000/yr, Premium 1 200/mo or 12 000/yr, Driver 500/mo or 5 000/yr (som). Prices live in `PLAN_PRICES` in `src/lib/data.ts`.
 - Start plan hides direct contacts (`showsDirectContacts`). Premium sorts first and gets the badge.
 - Payments at launch are manual (MBank / Elsom / O!Dengi QR) — admin activates the subscription.
 

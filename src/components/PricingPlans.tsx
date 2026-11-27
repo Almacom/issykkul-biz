@@ -8,7 +8,7 @@ const ORDER: Plan[] = ["start", "standard", "premium", "driver"];
 export function PricingPlans() {
   const t = useTranslations("pricing");
   const tc = useTranslations();
-  const [bill, setBill] = useState<"month" | "year">("year");
+  const [bill, setBill] = useState<"month" | "year">("month");
   const [note, setNote] = useState(false);
 
   return (
